@@ -2,250 +2,595 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Monumento al Porro | Realidad Aumentada</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Monumento al Porro | Realidad Aumentada y Patrimonio Cultural</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "@google/model-viewer": "https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"
+            }
+        }
+    </script>
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        body {
+        * {
             margin: 0;
-            overflow: hidden;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            background-color: #FFF9F0;
+            color: #2C2C2C;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .full-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 60px 0;
+        }
+        .full-screen .container {
+            width: 100%;
+        }
+        h1, h2, h3, h4, .nav-links a, .btn, button {
             font-family: Georgia, 'Times New Roman', Times, serif;
         }
-        /* Ocultar mensajes de error molestos de A-Frame (opcional) */
-        .a-error, .a-dialog, .a-enter-vr {
-            display: none !important;
-        }
-        /* Interfaz de instrucciones superpuesta */
-        .instruction-overlay {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
+        h1 { font-size: 3.2rem; font-weight: 700; letter-spacing: -0.5px; }
+        h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 1.5rem; color: #2C3E2F; text-align: center; }
+        h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-sub {
             text-align: center;
-            color: white;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-            padding: 12px 20px;
-            border-radius: 30px;
-            width: fit-content;
-            margin: 0 auto;
-            z-index: 100;
-            pointer-events: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: 1px solid rgba(255,255,255,0.2);
-            font-family: Georgia, serif;
+            color: #5C5C5C;
+            margin-bottom: 2rem;
+            font-style: italic;
         }
-        .title-bar {
-            position: fixed;
-            top: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
+        .btn {
+            display: inline-block;
+            background-color: #C49A6C;
             color: white;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            padding: 8px;
-            z-index: 100;
-            font-size: 1rem;
+            padding: 12px 28px;
+            border-radius: 40px;
+            text-decoration: none;
             font-weight: bold;
-            letter-spacing: 1px;
-            font-family: Georgia, serif;
-            pointer-events: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
         }
-        .detection-status {
-            position: fixed;
-            top: 80px;
-            right: 16px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            padding: 6px 12px;
-            border-radius: 20px;
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #C49A6C;
             color: #C49A6C;
-            font-size: 0.7rem;
-            font-family: monospace;
-            z-index: 100;
-            pointer-events: none;
-            border-left: 2px solid #C49A6C;
         }
-        @media (max-width: 600px) {
-            .instruction-overlay { font-size: 0.7rem; bottom: 10px; padding: 8px 16px; }
-            .title-bar { font-size: 0.8rem; top: 10px; }
+        .btn-outline:hover {
+            background-color: #C49A6C;
+            color: white;
+        }
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 0.85rem;
+        }
+        nav {
+            background-color: #FFF9F0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 16px 0;
+        }
+        .nav-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #2C3E2F;
+            text-decoration: none;
+        }
+        .logo span { color: #C49A6C; }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #2C3E2F;
+            font-weight: 600;
+        }
+        .nav-links a:hover { color: #C49A6C; }
+        .menu-icon {
+            display: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagenes/bombo_maria.jpg') center/cover no-repeat;
+            color: white;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+        .hero .container { width: 100%; }
+        .hero h1 { font-size: 3.8rem; margin-bottom: 1rem; text-shadow: 1px 1px 4px black; }
+        .hero p { font-size: 1.2rem; max-width: 700px; margin: 0 auto 2rem; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-light { background: transparent; border: 2px solid white; color: white; }
+        .btn-light:hover { background: white; color: #2C3E2F; }
+        .bg-alt { background-color: #F5F0E6; }
+
+        /* RA mejorada */
+        .ra-grid { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+        .ra-text { flex: 1.5; }
+        .ra-steps { margin-top: 1rem; }
+        .step { display: flex; gap: 1rem; margin-bottom: 1.2rem; align-items: flex-start; }
+        .step-number {
+            background-color: #C49A6C; color: white; width: 32px; height: 32px;
+            border-radius: 50%; display: inline-flex; align-items: center;
+            justify-content: center; font-weight: bold; flex-shrink: 0;
+        }
+        .badge-ra {
+            background-color: #2C3E2F; color: #F5F0E6; padding: 4px 12px;
+            border-radius: 30px; font-size: 0.7rem; display: inline-block; margin-bottom: 1rem;
+        }
+        .ra-mockup { flex: 1; background: #2C2C2C; border-radius: 40px; padding: 20px; text-align: center; }
+        .mockup-screen { background: #F5F0E6; border-radius: 28px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        #qr-code { width: 140px; height: 140px; margin: 0 auto 1rem; background: white; padding: 8px; border-radius: 16px; }
+
+        /* Instrumentos grid */
+        .grid-instrumentos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .card {
+            background: white; border-radius: 24px; overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; }
+        .card-content { padding: 1.5rem; }
+        .card-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; }
+
+        /* Historia (dos columnas) */
+        .historia-grid {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+        .historia-texto { flex: 2; }
+        .historia-texto blockquote {
+            background: #F5F0E6; padding: 1rem; border-left: 4px solid #C49A6C;
+            margin: 1rem 0; font-style: italic; color: #2C3E2F;
+        }
+        .timeline-visual {
+            flex: 1; background: white; border-radius: 24px; padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .timeline-visual h3 { text-align: center; margin-bottom: 1rem; }
+        .timeline-line { position: relative; padding-left: 2rem; border-left: 3px solid #C49A6C; margin: 1rem 0; }
+        .timeline-event { position: relative; margin-bottom: 1.8rem; }
+        .timeline-event::before {
+            content: ''; position: absolute; left: -2.2rem; top: 0;
+            width: 12px; height: 12px; background-color: #C49A6C; border-radius: 50%;
+            border: 2px solid white; box-shadow: 0 0 0 2px #C49A6C;
+        }
+        .timeline-year { font-weight: bold; color: #C49A6C; font-size: 1.1rem; }
+
+        /* UBICACIÓN */
+        .ubicacion-grid {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+        .ubicacion-info {
+            flex: 2;
+        }
+        .ubicacion-info p {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+        .ubicacion-info strong {
+            color: #2C3E2F;
+        }
+        .medidas {
+            background: #F5F0E6;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            display: inline-block;
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+        .mapa {
+            flex: 1;
+            min-height: 350px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .mapa iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .btn-testimonios {
+            margin-top: 1.5rem;
+            display: inline-block;
+        }
+
+        /* Testimonios */
+        .testimonios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .testimonio {
+            background: white; padding: 1.5rem; border-radius: 24px;
+            border-left: 4px solid #C49A6C;
+        }
+        .testimonio i { font-size: 2rem; color: #C49A6C; margin-bottom: 0.5rem; display: inline-block; }
+
+        /* Footer */
+        footer {
+            background-color: #2C3E2F;
+            color: #F5F0E6;
+            padding: 2rem 0 1.5rem;
+        }
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .footer-brand { flex: 1; min-width: 180px; }
+        .footer-brand h4 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+        .footer-contact { flex: 2; display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: space-between; }
+        .contact-block p { margin-bottom: 0.4rem; font-size: 0.9rem; }
+        .contact-block strong { color: #C49A6C; }
+        .student-list { display: flex; flex-wrap: wrap; gap: 0.4rem 0.8rem; margin: 0.3rem 0; }
+        .student-list span { background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 30px; font-size: 0.8rem; }
+        .footer-links { flex: 1; min-width: 140px; }
+        .footer-links a { display: block; color: #F5F0E6; text-decoration: none; margin-bottom: 0.4rem; font-size: 0.85rem; }
+        .footer-links a:hover { text-decoration: underline; color: #C49A6C; }
+        .copyright { text-align: center; font-size: 0.75rem; border-top: 1px solid #5C6E5C; padding-top: 1.2rem; margin-top: 0.5rem; }
+
+        /* Modal */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; max-width: 550px; width: 90%; border-radius: 28px;
+            padding: 2rem; position: relative; max-height: 80vh; overflow-y: auto;
+        }
+        .close-modal { position: absolute; top: 1rem; right: 1.5rem; font-size: 1.8rem; cursor: pointer; color: #C49A6C; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; flex-direction: column; width: 100%; background: #FFF9F0; padding: 1rem; gap: 1rem; }
+            .nav-links.active { display: flex; }
+            .menu-icon { display: block; }
+            .hero h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.6rem; }
+            .full-screen { padding: 40px 0; }
+            .timeline-visual, .mapa { margin-top: 1rem; }
         }
     </style>
-    <!-- Importar MindAR + A-Frame -->
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.3/dist/mindar-image-aframe.prod.js"></script>
-    <!-- A-Frame extras para ayudas -->
-    <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 </head>
 <body>
 
-    <!-- Overlays simples para la experiencia -->
-    <div class="title-bar">
-        🎺 MONUMENTO AL PORRO | REALIDAD AUMENTADA
+<nav>
+    <div class="container nav-flex">
+        <a href="#" class="logo">Monumento <span>al Porro</span></a>
+        <div class="menu-icon" id="menuToggle"><i class="fas fa-bars"></i></div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#ra">Realidad Aumentada</a></li>
+            <li><a href="#instrumentos">Instrumentos</a></li>
+            <li><a href="#historia">Historia</a></li>
+            <li><a href="#ubicacion">Ubicación</a></li>
+        </ul>
     </div>
-    <div class="instruction-overlay">
-        📍 Apunta tu cámara hacia una de las 7 estatuas de bronce. El modelo 3D aparecerá automáticamente.
+</nav>
+
+<main>
+    <section id="inicio" class="hero">
+        <div class="container">
+            <h1>Monumento al Porro</h1>
+            <p>Patrimonio cultural inmaterial de Colombia – Realidad Aumentada para vivir la música del Sinú</p>
+            <div class="hero-buttons">
+                <a href="#ra" class="btn">Explorar experiencia RA</a>
+                <a href="#instrumentos" class="btn btn-light">Conoce los instrumentos</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="ra" class="full-screen">
+        <div class="container">
+            <h2>Realidad Aumentada en el monumento</h2>
+            <div class="ra-grid">
+                <div class="ra-text">
+                    <span class="badge-ra">¡RA activa! Escanea el QR</span>
+                    <div class="ra-steps">
+                        <div class="step"><div class="step-number">1</div><div class="step-text"><strong>Escanea el código QR</strong> (el que ves a la derecha) con la cámara de tu celular.</div></div>
+                        <div class="step"><div class="step-number">2</div><div class="step-text"><strong>Se abrirá esta misma página.</strong> Elige cualquier instrumento y presiona <strong>"Ver en RA"</strong>.</div></div>
+                        <div class="step"><div class="step-number">3</div><div class="step-text"><strong>Apunta tu cámara al suelo o a una superficie plana</strong> y el modelo 3D aparecerá. Puedes moverlo, agrandarlo y escuchar su sonido original.</div></div>
+                    </div>
+                    <p><i class="fas fa-mobile-alt"></i> Compatible con iOS (AR Quick Look) y Android (AR Core). No necesitas apps adicionales.</p>
+                </div>
+                <div class="ra-mockup">
+                    <div class="mockup-screen">
+                        <div id="qr-code"></div>
+                        <p><i class="fas fa-camera"></i> Escanea este QR desde tu móvil</p>
+                        <small>El QR se genera automáticamente con la URL actual.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="instrumentos" class="full-screen bg-alt">
+        <div class="container">
+            <h2>Los instrumentos del porro sinuano</h2>
+            <p class="section-sub">Toca "Ver en RA" para proyectar el modelo 3D en tu entorno</p>
+            <div class="grid-instrumentos" id="instrumentosGrid"></div>
+        </div>
+    </section>
+
+    <section id="historia" class="full-screen">
+        <div class="container">
+            <h2>Historia del porro sinuano</h2>
+            <div class="historia-grid">
+                <div class="historia-texto">
+                    <p>El <strong>porro sinuano</strong> es un género musical y danza tradicional de la región del Sinú, en Córdoba. Nace de la fusión de ritmos africanos, indígenas y europeos, y se consolida a través de las bandas de viento populares. Su cadencia alegre y su instrumentación (bombo, redoblante, platillos, clarinetes, trompetas y trombones) lo convierten en un emblema de la identidad costeña.</p>
+                    <p>En <strong>2018</strong> fue declarado <strong>Patrimonio Cultural Inmaterial de Colombia</strong> por el Ministerio de Cultura. El Monumento al Porro, inaugurado en 2006 en la rotonda de la Avenida Primera, rinde homenaje a esta tradición con esculturas de músicos y una bailarina. Hoy, la Realidad Aumentada acerca este legado a las nuevas generaciones.</p>
+                    <blockquote>“El porro sinuano es patrimonio cultural de nuestra nación” — <strong>Ministerio de Cultura, 2018</strong></blockquote>
+                </div>
+                <div class="timeline-visual">
+                    <h3>Cronograma</h3>
+                    <div class="timeline-line">
+                        <div class="timeline-event"><div class="timeline-year">2006</div><div>Inauguración del Monumento al Porro</div></div>
+                        <div class="timeline-event"><div class="timeline-year">2018</div><div>Declarado Patrimonio Cultural Inmaterial</div></div>
+                        <div class="timeline-event"><div class="timeline-year">2026</div><div>Lanzamiento del proyecto de Realidad Aumentada</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ubicacion" class="full-screen bg-alt">
+        <div class="container">
+            <h2>Ubicación</h2>
+            <div class="ubicacion-grid">
+                <div class="ubicacion-info">
+                    <p><i class="fas fa-map-marker-alt" style="color:#C49A6C;"></i> El Monumento al Porro <strong>"María Varilla"</strong> se levanta en la glorieta de la Terminal de Transportes de Montería, en la intersección de la Avenida Primera con la Calle 37. Es un punto estratégico que funciona como puerta de entrada para quienes llegan a la ciudad, conectando con importantes vías nacionales.</p>
+                    <p><i class="fas fa-arrows-up-down"></i> Representando la danza y el alma festiva del género. El conjunto escultórico está compuesto por siete estatuas de bronce: seis músicos que tocan los instrumentos tradicionales del porro sinuano (platillos, redoblante, trompeta, bombo, clarinete, trombón) y la bailarina María Varilla.</p>
+                    <p><i class="fas fa-city"></i> La zona corresponde al centro histórico de Montería. Cerca se encuentran la Plaza Cultural del Sinú, la Catedral de San Jerónimo, el Muelle Turístico y la Ronda del Sinú (un parque lineal ideal para caminar junto al río). El monumento fue inaugurado en 2006 y es un homenaje al porro sinuano, declarado Patrimonio Cultural Inmaterial de Colombia en 2018.</p>
+                    <p><i class="far fa-clock"></i> <strong>Horario:</strong> abierto 24h (recomendado 8am – 6pm)</p>
+                    <p><i class="fas fa-ticket-alt"></i> <strong>Entrada:</strong> gratuita</p>
+                    <p><i class="fas fa-location-dot"></i> <strong>Dirección:</strong> Carrera 1 #37, Centro, Montería, Córdoba, 230002</p>
+                    <a href="https://maps.google.com/?q=Carrera+1+con+calle+37+Montería+Córdoba" target="_blank" class="btn btn-sm">Abrir en Google Maps</a>
+                    <div class="btn-testimonios">
+                        <a href="#testimonios" class="btn btn-sm btn-outline">Ver opiniones de visitantes →</a>
+                    </div>
+                </div>
+                <div class="mapa">
+                    <iframe src="https://maps.google.com/maps?q=Carrera%201%20con%20calle%2037%2C%20Monter%C3%ADa%2C%20C%C3%B3rdoba&z=16&output=embed" allowfullscreen loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonios" class="full-screen">
+        <div class="container">
+            <h2>Visitantes y expertos opinan</h2>
+            <div class="testimonios-grid">
+                <div class="testimonio"><i class="fas fa-quote-left"></i><p>“Ver el modelo 3D del clarinete en mi sala fue mágico. Los sonidos son auténticos.”</p><strong>— María José Villadiego, estudiante de la UPB</strong></div>
+                <div class="testimonio"><i class="fas fa-quote-left"></i><p>“La RA acerca a los jóvenes al folclor. Una herramienta educativa increíble.”</p><strong>— Ana Martínez, Ciudadana de Montería</strong></div>
+                <div class="testimonio"><i class="fas fa-quote-left"></i><p>“El QR funcionó perfecto. Proyecté el bombo en el parque y sonó el ritmo real.”</p><strong>— Iván Andrés Molina, estudiante de la Universidad de Córdoba</strong></div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h4>Monumento al Porro</h4>
+                <p>Patrimonio cultural inmaterial de Colombia</p>
+            </div>
+            <div class="footer-contact">
+                <div class="contact-block">
+                    <p><i class="fas fa-envelope"></i> <strong>proyecto.monumento@upb.edu.co</strong></p>
+                    <p><strong>Estudiantes:</strong></p>
+                    <div class="student-list">
+                        <span>Camila Malo</span> <span>Juan Diego Cárdenas</span> <span>Mayvic Arroyo</span>
+                        <span>Valentina Bejarano</span> <span>Valery Palacio</span>
+                    </div>
+                </div>
+                <div class="contact-block">
+                    <p><strong>Docente:</strong> Cristian Javier Cano Mogollón</p>
+                    <p><i class="fas fa-university"></i> Universidad Pontificia Bolivariana</p>
+                    <p>Ingeniería Industrial – 2026</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="#inicio">Inicio</a>
+                <a href="#ra">Realidad Aumentada</a>
+                <a href="#instrumentos">Instrumentos</a>
+                <a href="#historia">Historia</a>
+                <a href="#ubicacion">Ubicación</a>
+                <a href="#testimonios">Testimonios</a>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2026 - Todos los derechos reservados | Proyecto Integrador I - UPB Montería</p>
+        </div>
     </div>
-    <div class="detection-status" id="statusMsg">
-        🔍 Esperando reconocimiento...
+</footer>
+
+<div id="modalHistoria" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="modalBody"></div>
     </div>
+</div>
 
-    <!-- Escena A-Frame con MindAR -->
-    <a-scene 
-        mindar-image="imageTargetSrc: ./targets/; autoStart: true; uiLoading: no; uiScanning: no;" 
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false"
-        renderer="antialias: true"
-        background="color: #000000"
-        style="width: 100%; height: 100vh; position: absolute; top: 0; left: 0;">
-        
-        <!-- Cámara obligatoria -->
-        <a-camera position="0 0 0" look-controls="enabled: false" cursor="rayOrigin: mouse"></a-camera>
+<script>
+    let audioActual = null;
 
-        <!-- ===================================================== -->
-        <!-- TARGET 1: PLATILLOS                                    -->
-        <!-- ===================================================== -->
-        <a-entity mindar-image-target="imageTargetSrc: ./targets/platillos.mind; track: 100;">
-            <!-- Modelo 3D -->
-            <a-entity 
-                gltf-model="./modelos/PLATILLOS.glb"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                rotation="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear"
-                class="ar-model">
-            </a-entity>
-            <!-- Pequeño efecto de sonido al detectar (controlado por evento) -->
-            <a-entity id="sound-platillos" sound="src: ./sonidos/platillos.mp3; autoplay: false; volume: 0.8;"></a-entity>
-        </a-entity>
+    // Arreglo de instrumentos con rutas CORREGIDAS según tus archivos
+    const instrumentos = [
+        { nombre: "Platillos", modelo: "modelos/PLATILLOS.glb", sonido: "sonidos/platillos.mp3", descripcion: "Percusión metálica que marca los acentos rítmicos.", img: "imagenes/platillos.jpg", historia: "Los platillos llegaron al porro desde las bandas militares europeas, pero los músicos costeños los adaptaron con un toque sincopado. Su sonido brillante y cortante resalta los momentos más intensos de la melodía." },
+        { nombre: "Redoblante", modelo: "modelos/REDOBLANTE.glb", sonido: "sonidos/redoblante.mp3", descripcion: "Tambor militar que aporta el ritmo sincopado.", img: "imagenes/redoblantee.jpg", historia: "El redoblante, también llamado caja, es el esqueleto rítmico del porro. Su técnica proviene de los tambores africanos fusionados con las marchas europeas." },
+        { nombre: "Trompeta", modelo: "modelos/TROMPETA.glb", sonido: "sonidos/trompeta.mp3", descripcion: "Melodía brillante, voz principal del porro.", img: "imagenes/trompeta.jpg", historia: "La trompeta es la gran solista del porro. Su timbre agudo y penetrante lleva la melodía y las improvisaciones." },
+        { nombre: "Bombo", modelo: "modelos/BOMBO.glb", sonido: "sonidos/bombo.mp3", descripcion: "Corazón rítmico, compás de 2/4.", img: "imagenes/bombo.jpg", historia: "El bombo es la base del porro. Su golpe grave y profundo marca el paso de la danza." },
+        { nombre: "Clarinete", modelo: "modelos/CLARINETE.glb", sonido: "sonidos/clarinete.mp3", descripcion: "Viento-madera que da calidez y adornos.", img: "imagenes/clarineteee.jpg", historia: "El clarinete añade la voz melancólica y juguetona al porro. Sus fraseos dialogan con la trompeta." },
+        { nombre: "Trombón", modelo: "modelos/TROMBON.glb", sonido: "sonidos/trombon.mp3", descripcion: "Grave, potente, soporte armónico.", img: "imagenes/trombon2.jpg", historia: "El trombón de varas aporta la base armónica y un carácter grave y brillante a la vez." },
+        { nombre: "María Varilla", modelo: "modelos/MARIA_VARILLA.glb", sonido: "sonidos/maria_varilla.mp3", descripcion: "La bailarina eterna, musa del monumento.", img: "imagenes/maria_varilla.jpg", historia: "María Varilla representa a todas las mujeres que han danzado porro en las plazas. Su escultura invita a celebrar el patrimonio con alegría." }
+    ];
 
-        <!-- ===================================================== -->
-        <!-- TARGET 2: REDOBLANTE                                   -->
-        <!-- ===================================================== -->
-        <a-entity mindar-image-target="imageTargetSrc: ./targets/redoblante.mind;">
-            <a-entity 
-                gltf-model="./modelos/REDOBLANTE.glb"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 18000; easing: linear">
-            </a-entity>
-            <a-entity sound="src: ./sonidos/redoblante.mp3; autoplay: false; volume: 0.8;"></a-entity>
-        </a-entity>
+    function generarQR() {
+        const qrDiv = document.getElementById('qr-code');
+        if (qrDiv && typeof QRCode !== 'undefined') {
+            qrDiv.innerHTML = "";
+            new QRCode(qrDiv, { text: window.location.href, width: 128, height: 128, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+        }
+    }
 
-        <!-- ===================================================== -->
-        <!-- TARGET 3: TROMPETA                                     -->
-        <!-- ===================================================== -->
-        <a-entity mindar-image-target="imageTargetSrc: ./targets/trompeta.mind;">
-            <a-entity 
-                gltf-model="./modelos/TROMPETA.glb"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
-            </a-entity>
-            <a-entity sound="src: ./sonidos/trompeta.mp3; autoplay: false; volume: 0.8;"></a-entity>
-        </a-entity>
+    function reproducirSonido(url) {
+        if (!url) return;
+        if (audioActual) { audioActual.pause(); audioActual.currentTime = 0; }
+        const nuevoAudio = new Audio(url);
+        nuevoAudio.play().catch(err => console.warn("Error al reproducir sonido:", err));
+        audioActual = nuevoAudio;
+        nuevoAudio.onended = () => { if (audioActual === nuevoAudio) audioActual = null; };
+    }
 
-        <!-- ===================================================== -->
-        <!-- TARGET 4: BOMBO                                        -->
-        <!-- ===================================================== -->
-        <a-entity mindar-image-target="imageTargetSrc: ./targets/bombo.mind;">
-            <a-entity 
-                gltf-model="./modelos/BOMBO.glb"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 22000; easing: linear">
-            </a-entity>
-            <a-entity sound="src: ./sonidos/bombo.mp3; autoplay: false; volume: 0.8;"></a-entity>
-        </a-entity>
+    function abrirRA(modeloURL, nombreInstrumento) {
+        const modalAR = document.createElement('div');
+        modalAR.style.position = 'fixed'; modalAR.style.top = '0'; modalAR.style.left = '0';
+        modalAR.style.width = '100%'; modalAR.style.height = '100%'; modalAR.style.backgroundColor = 'rgba(0,0,0,0.9)';
+        modalAR.style.zIndex = '3000'; modalAR.style.display = 'flex'; modalAR.style.justifyContent = 'center';
+        modalAR.style.alignItems = 'center'; modalAR.style.flexDirection = 'column';
 
-        <!-- ===================================================== -->
-        <!-- TARGET 5: CLARINETE                                    -->
-        <!-- ===================================================== -->
-        <a-entity mindar-image-target="imageTargetSrc: ./targets/clarinete.mind;">
-            <a-entity 
-                gltf-model="./modelos/CLARINETE.glb"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 16000; easing: linear">
-            </a-entity>
-            <a-entity sound="src: ./sonidos/clarinete.mp3; autoplay: false; volume: 0.8;"></a-entity>
-        </a-entity>
+        const mv = document.createElement('model-viewer');
+        mv.setAttribute('src', modeloURL); mv.setAttribute('alt', nombreInstrumento); mv.setAttribute('ar', '');
+        mv.setAttribute('ar-modes', 'scene-viewer webxr quick-look'); mv.setAttribute('camera-controls', '');
+        mv.setAttribute('environment-image', 'neutral'); mv.setAttribute('style', 'width: 90%; height: 70%; background-color: #111; border-radius: 24px;');
+        mv.setAttribute('ios-src', modeloURL);
 
-        <!-- ===================================================== -->
-        <!-- TARGET 6: TROMBON                                      -->
-        <!-- ===================================================== -->
-        <a-entity mindar-image-target="imageTargetSrc: ./targets/trombon.mind;">
-            <a-entity 
-                gltf-model="./modelos/TROMBON.glb"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 19000; easing: linear">
-            </a-entity>
-            <a-entity sound="src: ./sonidos/trombon.mp3; autoplay: false; volume: 0.8;"></a-entity>
-        </a-entity>
+        const closeBtn = document.createElement('button');
+        closeBtn.innerText = 'Cerrar'; closeBtn.style.marginTop = '20px'; closeBtn.style.padding = '12px 24px';
+        closeBtn.style.backgroundColor = '#C49A6C'; closeBtn.style.border = 'none'; closeBtn.style.borderRadius = '40px';
+        closeBtn.style.color = 'white'; closeBtn.style.fontWeight = 'bold'; closeBtn.style.cursor = 'pointer';
+        closeBtn.onclick = () => document.body.removeChild(modalAR);
 
-        <!-- ===================================================== -->
-        <!-- TARGET 7: MARIA VARILLA                                -->
-        <!-- ===================================================== -->
-        <a-entity mindar-image-target="imageTargetSrc: ./targets/maria_varilla.mind;">
-            <a-entity 
-                gltf-model="./modelos/MARIA_VARILLA.glb"
-                scale="0.5 0.5 0.5"
-                position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear">
-            </a-entity>
-            <a-entity sound="src: ./sonidos/maria_varilla.mp3; autoplay: false; volume: 0.8;"></a-entity>
-        </a-entity>
+        const instr = document.createElement('p');
+        instr.innerText = 'Toca el modelo y luego "Ver en Realidad Aumentada" para proyectarlo en tu entorno.';
+        instr.style.color = 'white'; instr.style.marginBottom = '16px'; instr.style.fontFamily = 'Georgia';
 
-    </a-scene>
+        modalAR.appendChild(instr); modalAR.appendChild(mv); modalAR.appendChild(closeBtn);
+        document.body.appendChild(modalAR);
+    }
 
-    <script>
-        // Pequeño script para actualizar el estado de detección y reproducir sonidos
-        // y manejar la UI de estado.
-        (function() {
-            const statusDiv = document.getElementById('statusMsg');
-            let currentTarget = null;
+    function generarInstrumentos() {
+        const contenedor = document.getElementById('instrumentosGrid');
+        if (!contenedor) return;
+        contenedor.innerHTML = '';
+        instrumentos.forEach(inst => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img class="card-img" src="${inst.img}" alt="${inst.nombre}" loading="lazy" onerror="this.src='https://placehold.co/400x200?text=Imagen+no+encontrada'">
+                <div class="card-content">
+                    <h3>${inst.nombre}</h3>
+                    <p>${inst.descripcion}</p>
+                    <div class="card-buttons">
+                        <button class="btn-sm btn" data-historia="${inst.nombre}">Ver historia</button>
+                        <button class="btn-sm btn-outline btn-sonido" data-sonido="${inst.sonido}">Escuchar sonido</button>
+                        <button class="btn-sm btn ar-activate" data-modelo="${inst.modelo}" data-nombre="${inst.nombre}">🌐 Ver en RA</button>
+                    </div>
+                </div>
+            `;
+            contenedor.appendChild(card);
+        });
 
-            // Función para actualizar mensaje (usando eventos de MindAR)
-            // Como MindAR no dispara eventos nativos fáciles de atrapar desde aquí sin el componente,
-            // usamos un setInterval para verificar los targets activos (esto es rápido y no afecta rendimiento).
-            setInterval(() => {
-                const activeTargets = document.querySelectorAll('a-entity[mindar-image-target][visible="true"]');
-                if (activeTargets.length > 0) {
-                    const targetEntity = activeTargets[0];
-                    // Obtener el nombre del target (desde el src)
-                    const src = targetEntity.getAttribute('mindar-image-target')?.imageTargetSrc;
-                    let name = "desconocido";
-                    if (src) {
-                        if (src.includes('platillos')) name = "Platillos";
-                        else if (src.includes('redoblante')) name = "Redoblante";
-                        else if (src.includes('trompeta')) name = "Trompeta";
-                        else if (src.includes('bombo')) name = "Bombo";
-                        else if (src.includes('clarinete')) name = "Clarinete";
-                        else if (src.includes('trombon')) name = "Trombón";
-                        else if (src.includes('maria_varilla')) name = "María Varilla";
-                    }
-                    statusDiv.innerHTML = `🎯 DETECTADO: ${name} <span style="color:#a8e6cf;">●</span>`;
-                    statusDiv.style.color = "#C49A6C";
-                    
-                    // Reproducir sonido asociado si no se ha reproducido para este target
-                    if (currentTarget !== name) {
-                        currentTarget = name;
-                        // Buscar el elemento de sonido dentro del target activo y reproducirlo
-                        const soundComp = targetEntity.querySelector('a-entity[sound]');
-                        if (soundComp && soundComp.components && soundComp.components.sound) {
-                            soundComp.components.sound.playSound();
-                        }
-                    }
-                } else {
-                    if (currentTarget !== null) {
-                        statusDiv.innerHTML = `🔍 Escaneando... acerca la cámara a una estatua.`;
-                        statusDiv.style.color = "#C49A6C";
-                        currentTarget = null;
-                    }
-                }
-            }, 300);
-        })();
-    </script>
+        document.querySelectorAll('[data-historia]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const nombre = btn.getAttribute('data-historia');
+                const instrumento = instrumentos.find(i => i.nombre === nombre);
+                if (instrumento) mostrarModal(instrumento);
+            });
+        });
+        document.querySelectorAll('.btn-sonido').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sonidoURL = btn.getAttribute('data-sonido');
+                if (sonidoURL) reproducirSonido(sonidoURL);
+                else alert("Sonido no disponible.");
+            });
+        });
+        document.querySelectorAll('.ar-activate').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modeloURL = btn.getAttribute('data-modelo');
+                const nombre = btn.getAttribute('data-nombre');
+                if (modeloURL) abrirRA(modeloURL, nombre);
+                else alert("Modelo 3D no encontrado.");
+            });
+        });
+    }
+
+    const modalHistoria = document.getElementById('modalHistoria');
+    const modalBody = document.getElementById('modalBody');
+    function mostrarModal(instrumento) {
+        modalBody.innerHTML = `<h3>${instrumento.nombre}</h3><p>${instrumento.historia}</p><p><i class="fas fa-music"></i> Escucha su sonido real con el botón "Escuchar sonido".<br>Para RA, presiona "Ver en RA".</p>`;
+        modalHistoria.style.display = 'flex';
+    }
+    document.querySelector('.close-modal').addEventListener('click', () => modalHistoria.style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === modalHistoria) modalHistoria.style.display = 'none'; });
+
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
+    }
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId === "#" || targetId === "") return;
+            const target = document.querySelector(targetId);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
+                navLinks.classList.remove('active');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        generarQR();
+        generarInstrumentos();
+    });
+</script>
 </body>
 </html>
