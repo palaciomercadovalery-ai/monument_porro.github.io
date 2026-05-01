@@ -193,7 +193,7 @@
         }
         .timeline-year { font-weight: bold; color: #C49A6C; font-size: 1.1rem; }
 
-        /* UBICACIÓN - totalmente reorganizada como Historia */
+        /* UBICACIÓN */
         .ubicacion-grid {
             display: flex;
             gap: 2rem;
@@ -249,7 +249,7 @@
         }
         .testimonio i { font-size: 2rem; color: #C49A6C; margin-bottom: 0.5rem; display: inline-block; }
 
-        /* Footer con todos los contactos */
+        /* Footer */
         footer {
             background-color: #2C3E2F;
             color: #F5F0E6;
@@ -313,7 +313,6 @@
 </nav>
 
 <main>
-    <!-- HERO -->
     <section id="inicio" class="hero">
         <div class="container">
             <h1>Monumento al Porro</h1>
@@ -325,7 +324,6 @@
         </div>
     </section>
 
-    <!-- REALIDAD AUMENTADA -->
     <section id="ra" class="full-screen">
         <div class="container">
             <h2>Realidad Aumentada en el monumento</h2>
@@ -350,7 +348,6 @@
         </div>
     </section>
 
-    <!-- INSTRUMENTOS -->
     <section id="instrumentos" class="full-screen bg-alt">
         <div class="container">
             <h2>Los instrumentos del porro sinuano</h2>
@@ -359,7 +356,6 @@
         </div>
     </section>
 
-    <!-- HISTORIA -->
     <section id="historia" class="full-screen">
         <div class="container">
             <h2>Historia del porro sinuano</h2>
@@ -381,14 +377,13 @@
         </div>
     </section>
 
-    <!-- UBICACIÓN (reorganizada como Historia, simple y ordenada) -->
     <section id="ubicacion" class="full-screen bg-alt">
         <div class="container">
             <h2>Ubicación</h2>
             <div class="ubicacion-grid">
                 <div class="ubicacion-info">
-                    <p><i class="fas fa-map-marker-alt" style="color:#C49A6C;"></i> El Monumento al Porro <strong>"María Varilla"</strong> El Monumento al Porro se levanta en la glorieta de la Terminal de Transportes de Montería, en la intersección de la Avenida Primera con la Calle 37. Es un punto estratégico que funciona como puerta de entrada para quienes llegan a la ciudad, conectando con importantes vías nacionales.</p>
-                    <p><i class="fas fa-arrows-up-down"></i> Representando la danza y el alma festiva del género.<span span> El conjunto escultórico está compuesto por siete estatuas de bronce: seis músicos que tocan los instrumentos tradicionales del porro sinuano (platillos, redoblante, trompeta, bombo, clarinete, trombón).</p>
+                    <p><i class="fas fa-map-marker-alt" style="color:#C49A6C;"></i> El Monumento al Porro <strong>"María Varilla"</strong> se levanta en la glorieta de la Terminal de Transportes de Montería, en la intersección de la Avenida Primera con la Calle 37. Es un punto estratégico que funciona como puerta de entrada para quienes llegan a la ciudad, conectando con importantes vías nacionales.</p>
+                    <p><i class="fas fa-arrows-up-down"></i> Representando la danza y el alma festiva del género. El conjunto escultórico está compuesto por siete estatuas de bronce: seis músicos que tocan los instrumentos tradicionales del porro sinuano (platillos, redoblante, trompeta, bombo, clarinete, trombón) y la bailarina María Varilla.</p>
                     <p><i class="fas fa-city"></i> La zona corresponde al centro histórico de Montería. Cerca se encuentran la Plaza Cultural del Sinú, la Catedral de San Jerónimo, el Muelle Turístico y la Ronda del Sinú (un parque lineal ideal para caminar junto al río). El monumento fue inaugurado en 2006 y es un homenaje al porro sinuano, declarado Patrimonio Cultural Inmaterial de Colombia en 2018.</p>
                     <p><i class="far fa-clock"></i> <strong>Horario:</strong> abierto 24h (recomendado 8am – 6pm)</p>
                     <p><i class="fas fa-ticket-alt"></i> <strong>Entrada:</strong> gratuita</p>
@@ -405,7 +400,6 @@
         </div>
     </section>
 
-    <!-- TESTIMONIOS -->
     <section id="testimonios" class="full-screen">
         <div class="container">
             <h2>Visitantes y expertos opinan</h2>
@@ -418,7 +412,6 @@
     </section>
 </main>
 
-<!-- FOOTER con todos los contactos -->
 <footer>
     <div class="container">
         <div class="footer-content">
@@ -456,7 +449,6 @@
     </div>
 </footer>
 
-<!-- Modal historia -->
 <div id="modalHistoria" class="modal">
     <div class="modal-content">
         <span class="close-modal">&times;</span>
@@ -467,6 +459,7 @@
 <script>
     let audioActual = null;
 
+    // Arreglo de instrumentos con rutas CORREGIDAS según tus archivos
     const instrumentos = [
         { nombre: "Platillos", modelo: "modelos/PLATILLOS.glb", sonido: "sonidos/platillos.mp3", descripcion: "Percusión metálica que marca los acentos rítmicos.", img: "imagenes/platillos.jpg", historia: "Los platillos llegaron al porro desde las bandas militares europeas, pero los músicos costeños los adaptaron con un toque sincopado. Su sonido brillante y cortante resalta los momentos más intensos de la melodía." },
         { nombre: "Redoblante", modelo: "modelos/REDOBLANTE.glb", sonido: "sonidos/redoblante.mp3", descripcion: "Tambor militar que aporta el ritmo sincopado.", img: "imagenes/redoblantee.jpg", historia: "El redoblante, también llamado caja, es el esqueleto rítmico del porro. Su técnica proviene de los tambores africanos fusionados con las marchas europeas." },
