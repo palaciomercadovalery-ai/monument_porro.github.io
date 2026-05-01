@@ -4,259 +4,244 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Monumento al Porro | AR con MindAR</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- MindAR + A-Frame -->
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Georgia, serif; background: #FFF9F0; }
-        .hero { min-height: 100vh; background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), url('imagenes/bombo_maria.jpg') center/cover; color: white; display: flex; align-items: center; text-align: center; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        .btn { background: #C49A6C; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
-        nav { background: #FFF9F0; position: sticky; top: 0; z-index: 1000; padding: 16px 0; }
-        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.7rem; font-weight: bold; color: #2C3E2F; text-decoration: none; }
-        .logo span { color: #C49A6C; }
-        .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a { color: #2C3E2F; text-decoration: none; font-weight: 600; }
-        .menu-icon { display: none; font-size: 1.8rem; cursor: pointer; }
-
-        /* Sección AR */
-        #ar-camara { background: #1a2a1d; color: #F5F0E6; padding: 60px 0; min-height: 100vh; }
-        .ar-badge { background: linear-gradient(135deg, #C49A6C, #e8b87a); color: white; padding: 5px 16px; border-radius: 30px; font-size: 0.75rem; display: inline-block; margin-bottom: 1rem; }
-        .mindar-layout { display: flex; gap: 2rem; flex-wrap: wrap; }
-        .mindar-instructions { flex: 1; min-width: 240px; }
-        .step { display: flex; gap: 0.8rem; margin-bottom: 1rem; align-items: flex-start; }
-        .step-num { background: #C49A6C; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
-        .mindar-viewer { flex: 2; min-width: 280px; }
-        .ar-screen { position: relative; width: 100%; aspect-ratio: 9/16; max-height: 600px; background: #0a0f0b; border-radius: 28px; overflow: hidden; border: 2px solid #C49A6C; }
-        #mindar-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; background: radial-gradient(#1a2a1d, #0a0f0b); z-index: 10; }
-        #mindar-loading { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; z-index: 20; border-radius: 28px; }
-        .spinner { width: 48px; height: 48px; border: 3px solid rgba(196,154,108,0.2); border-top-color: #C49A6C; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #mindar-scene-container { width: 100%; height: 100%; position: absolute; inset: 0; }
-        .scan-frame { position: absolute; inset: 0; pointer-events: none; z-index: 15; display: none; }
-        .scan-corner { position: absolute; width: 40px; height: 40px; border-color: #C49A6C; border-style: solid; }
-        .tl { top: 12%; left: 8%; border-width: 3px 0 0 3px; }
-        .tr { top: 12%; right: 8%; border-width: 3px 3px 0 0; }
-        .bl { bottom: 12%; left: 8%; border-width: 0 0 3px 3px; }
-        .br { bottom: 12%; right: 8%; border-width: 0 3px 3px 0; }
-        .scan-line { position: absolute; left: 8%; right: 8%; height: 2px; background: linear-gradient(90deg, transparent, #C49A6C, transparent); animation: scan 2s infinite; }
-        @keyframes scan { 0% { top: 12%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 88%; opacity: 0; } }
-        #mindar-hud { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; z-index: 25; display: none; }
-        .detected-card { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); border-radius: 30px; padding: 6px 18px; display: inline-block; border: 1px solid #C49A6C; opacity: 0; transition: opacity 0.2s; }
-        .detected-card.visible { opacity: 1; }
-        .warning { background: rgba(255,200,100,0.1); border: 1px solid rgba(255,200,100,0.3); border-radius: 12px; padding: 0.7rem; margin-top: 1rem; font-size: 0.75rem; color: #f0d080; }
-        button { background: linear-gradient(135deg, #C49A6C, #e8b87a); border: none; padding: 12px; border-radius: 40px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 1rem; color: white; }
-        .btn-stop { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #ddd; display: none; }
-        @media (max-width: 768px) {
-            .nav-links { display: none; flex-direction: column; background: #FFF9F0; padding: 1rem; }
-            .nav-links.active { display: flex; }
-            .menu-icon { display: block; }
-            .mindar-layout { flex-direction: column-reverse; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Georgia, serif;
+        }
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            backdrop-filter: blur(8px);
+            border-top: 1px solid #C49A6C;
+        }
+        button {
+            background: #C49A6C;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            font-family: Georgia, serif;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0 8px;
+            transition: transform 0.2s;
+        }
+        button:active { transform: scale(0.96); }
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: #C49A6C;
+            font-size: 0.8rem;
+            z-index: 100;
+            font-family: monospace;
+            backdrop-filter: blur(4px);
+        }
+        .detected-badge {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            padding: 8px 20px;
+            color: white;
+            border-left: 3px solid #C49A6C;
+            font-weight: bold;
+            z-index: 100;
+            display: none;
+            white-space: nowrap;
+            font-family: Georgia, serif;
+        }
+        @media (max-width: 600px) {
+            .detected-badge { font-size: 0.8rem; bottom: 90px; white-space: normal; width: 80%; text-align: center; }
+            button { padding: 8px 16px; font-size: 0.8rem; }
         }
     </style>
+    <!-- MindAR A-Frame -->
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 </head>
 <body>
-
-<nav>
-    <div class="container nav-flex">
-        <a href="#" class="logo">Monumento <span>al Porro</span></a>
-        <div class="menu-icon" id="menuToggle"><i class="fas fa-bars"></i></div>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#inicio">Inicio</a></li>
-            <li><a href="#ar-camara">Experiencia AR</a></li>
-            <li><a href="#instrumentos">Instrumentos</a></li>
-            <li><a href="#historia">Historia</a></li>
-            <li><a href="#ubicacion">Ubicación</a></li>
-        </ul>
+    <div class="status" id="status">⚙️ Inactivo</div>
+    <div class="detected-badge" id="detectedBadge">🎯 Detectado: <span id="detectedName">---</span></div>
+    <div id="controls">
+        <button id="startBtn">📷 Activar Cámara AR</button>
+        <button id="stopBtn" style="display:none;">🛑 Detener</button>
     </div>
-</nav>
 
-<main>
-    <section id="inicio" class="hero">
-        <div class="container">
-            <h1>Monumento al Porro</h1>
-            <p>Patrimonio cultural inmaterial de Colombia – Realidad Aumentada para vivir la música del Sinú</p>
-            <a href="#ar-camara" class="btn">Experiencia AR con Cámara</a>
-        </div>
-    </section>
+    <!-- Escena A-Frame que se llenará dinámicamente -->
+    <div id="arContainer" style="position: absolute; inset: 0; z-index: 1;"></div>
 
-    <section id="ar-camara">
-        <div class="container">
-            <div style="text-align:center;"><span class="ar-badge">⟡ Realidad Aumentada Inmersiva</span></div>
-            <h2>Experiencia AR con Cámara</h2>
-            <p class="section-sub">Apunta a una de las 7 estatuas. El modelo 3D y su sonido aparecerán al detectarla.</p>
+    <script>
+        // ========== DATOS DE TARGETS INDIVIDUALES ==========
+        const targets = [
+            { id: "platillos",   targetFile: "targets/platillos.mind",   modelFile: "modelos/PLATILLOS.glb",   soundFile: "sonidos/platillos.mp3",   name: "Platillos" },
+            { id: "redoblante",  targetFile: "targets/redoblante.mind",  modelFile: "modelos/REDOBLANTE.glb",  soundFile: "sonidos/redoblante.mp3",  name: "Redoblante" },
+            { id: "trompeta",    targetFile: "targets/trompeta.mind",    modelFile: "modelos/TROMPETA.glb",    soundFile: "sonidos/trompeta.mp3",    name: "Trompeta" },
+            { id: "bombo",       targetFile: "targets/bombo.mind",       modelFile: "modelos/BOMBO.glb",       soundFile: "sonidos/bombo.mp3",       name: "Bombo" },
+            { id: "clarinete",   targetFile: "targets/clarinete.mind",   modelFile: "modelos/CLARINETE.glb",   soundFile: "sonidos/clarinete.mp3",   name: "Clarinete" },
+            { id: "trombon",     targetFile: "targets/trombon.mind",     modelFile: "modelos/TROMBON.glb",     soundFile: "sonidos/trombon.mp3",     name: "Trombón" },
+            { id: "maria_varilla", targetFile: "targets/maria_varilla.mind", modelFile: "modelos/MARIA_VARILLA.glb", soundFile: "sonidos/maria_varilla.mp3", name: "María Varilla" }
+        ];
 
-            <div class="mindar-layout">
-                <div class="mindar-instructions">
-                    <h3>¿Cómo usar?</h3>
-                    <div class="step"><div class="step-num">1</div><p><strong>Activa la cámara</strong> con el botón.</p></div>
-                    <div class="step"><div class="step-num">2</div><p><strong>Apunta</strong> a una estatua de bronce.</p></div>
-                    <div class="step"><div class="step-num">3</div><p><strong>El modelo y sonido</strong> se activan automáticamente.</p></div>
-                    <button id="btnStart">📷 Activar Cámara AR</button>
-                    <button id="btnStop" class="btn-stop">🛑 Detener cámara</button>
-                    <div class="warning"><i class="fas fa-info-circle"></i> Requiere HTTPS y permisos de cámara. La primera carga puede tomar unos segundos.</div>
-                </div>
+        let currentAudio = null;
+        let currentScene = null;
+        let mindarSystem = null;
+        let arActive = false;
 
-                <div class="mindar-viewer">
-                    <div class="ar-screen" id="arScreen">
-                        <div id="mindar-placeholder"><i class="fas fa-camera-retro" style="font-size:3rem;"></i><p>Activa la cámara</p></div>
-                        <div id="mindar-loading" style="display:none;"><div class="spinner"></div><p>Preparando reconocimiento...<br><small>Esto puede tardar unos instantes</small></p></div>
-                        <div id="mindar-scene-container" style="display:none; width:100%; height:100%; position:absolute; inset:0;"></div>
-                        <div class="scan-frame" id="scanFrame"><div class="scan-corner tl"></div><div class="scan-corner tr"></div><div class="scan-corner bl"></div><div class="scan-corner br"></div><div class="scan-line"></div></div>
-                        <div id="mindar-hud"><div class="detected-card" id="detectedCard"><span>🔍 DETECTADO</span> <strong id="detectedName">---</strong></div></div>
-                    </div>
-                    <div id="hintMsg" style="text-align:center; margin-top:8px; display:none;"><small><i class="fas fa-hand-pointer"></i> Mantén la cámara estable</small></div>
-                </div>
-            </div>
-        </div>
-    </section>
+        const statusDiv = document.getElementById('status');
+        const detectedBadge = document.getElementById('detectedBadge');
+        const detectedNameSpan = document.getElementById('detectedName');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const arContainer = document.getElementById('arContainer');
 
-    <!-- Aquí van las demás secciones (Instrumentos, Historia, etc.), pero las omito por brevedad. El resto de tu página permanece igual -->
-</main>
+        function stopSound() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+        }
 
-<script>
-    // ========== CONFIGURACIÓN DE TARGETS INDIVIDUALES ==========
-    // Lista de instrumentos con rutas completas
-    const instrumentos = [
-        { nombre: "Platillos", target: "./targets/platillos.mind", modelo: "./modelos/PLATILLOS.glb", sonido: "./sonidos/platillos.mp3" },
-        { nombre: "Redoblante", target: "./targets/redoblante.mind", modelo: "./modelos/REDOBLANTE.glb", sonido: "./sonidos/redoblante.mp3" },
-        { nombre: "Trompeta", target: "./targets/trompeta.mind", modelo: "./modelos/TROMPETA.glb", sonido: "./sonidos/trompeta.mp3" },
-        { nombre: "Bombo", target: "./targets/bombo.mind", modelo: "./modelos/BOMBO.glb", sonido: "./sonidos/bombo.mp3" },
-        { nombre: "Clarinete", target: "./targets/clarinete.mind", modelo: "./modelos/CLARINETE.glb", sonido: "./sonidos/clarinete.mp3" },
-        { nombre: "Trombón", target: "./targets/trombon.mind", modelo: "./modelos/TROMBON.glb", sonido: "./sonidos/trombon.mp3" },
-        { nombre: "María Varilla", target: "./targets/maria_varilla.mind", modelo: "./modelos/MARIA_VARILLA.glb", sonido: "./sonidos/maria_varilla.mp3" }
-    ];
-
-    // Elementos DOM
-    const btnStart = document.getElementById('btnStart');
-    const btnStop = document.getElementById('btnStop');
-    const placeholder = document.getElementById('mindar-placeholder');
-    const loading = document.getElementById('mindar-loading');
-    const sceneContainer = document.getElementById('mindar-scene-container');
-    const scanFrame = document.getElementById('scanFrame');
-    const hud = document.getElementById('mindar-hud');
-    const detectedCard = document.getElementById('detectedCard');
-    const detectedNameSpan = document.getElementById('detectedName');
-    const hintMsg = document.getElementById('hintMsg');
-
-    let activeAudio = null;
-    let scene = null, mindarSys = null;
-
-    function stopSound() { if (activeAudio) { activeAudio.pause(); activeAudio.currentTime = 0; activeAudio = null; } }
-
-    function buildScene() {
-        // Crear la escena A-Frame con múltiples targets individuales
-        const aScene = document.createElement('a-scene');
-        aScene.setAttribute('mindar-image', 'imageTargetSrc: null; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;');
-        aScene.setAttribute('embedded', '');
-        aScene.setAttribute('vr-mode-ui', 'enabled: false');
-        aScene.style.cssText = 'width:100%; height:100%; position:absolute;';
-        const camera = document.createElement('a-camera');
-        camera.setAttribute('look-controls', 'enabled: false');
-        aScene.appendChild(camera);
-
-        // Por cada instrumento, crear un target individual con su modelo (carga perezosa)
-        instrumentos.forEach(inst => {
-            const target = document.createElement('a-entity');
-            target.setAttribute('mindar-image-target', `imageTargetSrc: ${inst.target}`);
-            // Modelo 3D con preload="none" para que no cargue hasta que se active
-            const model = document.createElement('a-entity');
-            model.setAttribute('gltf-model', inst.modelo);
-            model.setAttribute('scale', '0.5 0.5 0.5');
-            model.setAttribute('position', '0 0 0');
-            model.setAttribute('visible', 'true');
-            model.setAttribute('preload', 'none');  // No carga hasta ser usado
-            // Sonido (se agregará dinámicamente cuando se detecte)
-            target.appendChild(model);
-            // Evento de detección: cargar modelo y sonido bajo demanda
-            target.addEventListener('targetFound', () => {
-                // Asegurar que el modelo se carga explícitamente (por si no se cargó)
-                if (model.components && model.components['gltf-model'] && !model.components['gltf-model'].data) {
-                    model.setAttribute('gltf-model', inst.modelo);
+        function showDetected(name) {
+            detectedNameSpan.textContent = name;
+            detectedBadge.style.display = 'block';
+            setTimeout(() => {
+                if (detectedNameSpan.textContent === name) {
+                    // se oculta 1 segundo después de perder detección? mejor manejarlo con targetLost
                 }
-                // Reproducir sonido (bucle)
-                if (activeAudio) activeAudio.pause();
-                const audio = new Audio(inst.sonido);
-                audio.loop = true;
-                audio.play().catch(e => console.log('audio bloqueado, toca pantalla'));
-                activeAudio = audio;
-                // Mostrar HUD
-                detectedNameSpan.textContent = inst.nombre;
-                detectedCard.classList.add('visible');
+            }, 500);
+        }
+        function hideDetected() {
+            detectedBadge.style.display = 'none';
+            stopSound();
+        }
+
+        async function startAR() {
+            if (arActive) return;
+            statusDiv.innerHTML = '🔍 Solicitando permiso de cámara...';
+            startBtn.disabled = true;
+            startBtn.textContent = '⏳ Iniciando...';
+
+            // Limpiar contenedor
+            arContainer.innerHTML = '';
+
+            // Crear escena A-Frame
+            const scene = document.createElement('a-scene');
+            scene.setAttribute('mindar-image', 'imageTargetSrc: null; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;');
+            scene.setAttribute('embedded', '');
+            scene.setAttribute('vr-mode-ui', 'enabled: false');
+            scene.style.cssText = 'width:100%; height:100%; position:absolute; top:0; left:0;';
+
+            // Cámara
+            const camera = document.createElement('a-camera');
+            camera.setAttribute('look-controls', 'enabled: false');
+            scene.appendChild(camera);
+
+            // Agregar cada target
+            targets.forEach(t => {
+                const targetEntity = document.createElement('a-entity');
+                targetEntity.setAttribute('mindar-image-target', `imageTargetSrc: ${t.targetFile}`);
+                // Modelo 3D
+                const model = document.createElement('a-entity');
+                model.setAttribute('gltf-model', t.modelFile);
+                model.setAttribute('scale', '0.5 0.5 0.5');
+                model.setAttribute('position', '0 0 0');
+                model.setAttribute('visible', 'true');
+                // Quitamos las animaciones para ahorrar recursos
+                targetEntity.appendChild(model);
+                
+                // Sonido: se manejará con eventos
+                let soundPlaying = false;
+                targetEntity.addEventListener('targetFound', () => {
+                    if (soundPlaying) return;
+                    soundPlaying = true;
+                    showDetected(t.name);
+                    if (currentAudio) currentAudio.pause();
+                    const audio = new Audio(t.soundFile);
+                    audio.loop = true;
+                    audio.play().catch(e => console.warn('Autoplay bloqueado, toca la pantalla'));
+                    currentAudio = audio;
+                    audio.onended = () => { soundPlaying = false; };
+                });
+                targetEntity.addEventListener('targetLost', () => {
+                    soundPlaying = false;
+                    hideDetected();
+                });
+                scene.appendChild(targetEntity);
             });
-            target.addEventListener('targetLost', () => {
-                detectedCard.classList.remove('visible');
-                stopSound();
+
+            arContainer.appendChild(scene);
+            currentScene = scene;
+
+            // Esperar a que la escena esté cargada
+            scene.addEventListener('loaded', async () => {
+                mindarSystem = scene.systems['mindar-image-system'];
+                if (!mindarSystem) {
+                    statusDiv.innerHTML = '❌ Error: MindAR no inicializado. Verifica la consola.';
+                    console.error('MindAR system not found');
+                    return;
+                }
+                try {
+                    await mindarSystem.start();
+                    statusDiv.innerHTML = '✅ AR activa - Apunta a una estatua';
+                    arActive = true;
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'inline-block';
+                    // Forzar cámara trasera
+                    const cam = scene.querySelector('a-camera');
+                    if (cam && cam.components.camera) {
+                        cam.components.camera.camera.userData = { facingMode: 'environment' };
+                        // Reiniciar para aplicar
+                        cam.components.camera.update();
+                    }
+                } catch (err) {
+                    console.error(err);
+                    statusDiv.innerHTML = '⚠️ Error al iniciar AR: ' + err.message;
+                    startBtn.disabled = false;
+                    startBtn.textContent = '📷 Activar Cámara AR';
+                }
             });
-            aScene.appendChild(target);
-        });
+        }
 
-        sceneContainer.appendChild(aScene);
-        return aScene;
-    }
+        function stopAR() {
+            if (!arActive) return;
+            if (mindarSystem) mindarSystem.stop();
+            if (currentScene) {
+                arContainer.removeChild(currentScene);
+                currentScene = null;
+            }
+            stopSound();
+            hideDetected();
+            arActive = false;
+            statusDiv.innerHTML = '⚙️ Detenido';
+            startBtn.disabled = false;
+            startBtn.textContent = '📷 Activar Cámara AR';
+            startBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+        }
 
-    async function startAR() {
-        if (!navigator.mediaDevices) { alert('Cámara no soportada. Usa HTTPS.'); return; }
-        btnStart.disabled = true;
-        btnStart.innerHTML = '⏳ Iniciando...';
-        placeholder.style.display = 'none';
-        loading.style.display = 'flex';
-        sceneContainer.style.display = 'block';
+        startBtn.addEventListener('click', startAR);
+        stopBtn.addEventListener('click', stopAR);
 
-        const aScene = buildScene();
-        scene = aScene;
-        mindarSys = scene.systems['mindar-image-system'];
-        if (!mindarSys) { error(); return; }
-        try {
-            await mindarSys.start();
-            // Activar cámara trasera
-            const cam = scene.querySelector('a-camera');
-            if (cam && cam.components.camera) cam.components.camera.camera.userData = { facingMode: 'environment' };
-            scanFrame.style.display = 'block';
-            hud.style.display = 'block';
-            hintMsg.style.display = 'block';
-            loading.style.display = 'none';
-            btnStart.style.display = 'none';
-            btnStop.style.display = 'block';
-        } catch(e) { error(); }
-    }
-
-    function error() {
-        loading.style.display = 'none';
-        placeholder.style.display = 'flex';
-        placeholder.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Error al iniciar.<br>Verifica que los archivos .mind estén en /targets/</p>';
-        btnStart.disabled = false;
-        btnStart.innerHTML = '📷 Activar Cámara AR';
-        btnStart.style.display = 'block';
-    }
-
-    function stopAR() {
-        if (mindarSys) mindarSys.stop();
-        stopSound();
-        scanFrame.style.display = 'none';
-        hud.style.display = 'none';
-        hintMsg.style.display = 'none';
-        sceneContainer.style.display = 'none';
-        placeholder.style.display = 'flex';
-        placeholder.innerHTML = '<i class="fas fa-camera-retro"></i><p>Activa la cámara</p>';
-        detectedCard.classList.remove('visible');
-        btnStart.disabled = false;
-        btnStart.innerHTML = '📷 Activar Cámara AR';
-        btnStart.style.display = 'block';
-        btnStop.style.display = 'none';
-        // Limpiar escena para liberar memoria
-        sceneContainer.innerHTML = '';
-    }
-
-    btnStart.addEventListener('click', startAR);
-    btnStop.addEventListener('click', stopAR);
-
-    // Menú hamburguesa (básico)
-    const menuToggle = document.getElementById('menuToggle');
-    const navLinks = document.getElementById('navLinks');
-    if (menuToggle) menuToggle.onclick = () => navLinks.classList.toggle('active');
-</script>
+        // Ayuda para desbloquear audio en dispositivos móviles
+        document.body.addEventListener('touchstart', () => {
+            if (currentAudio && currentAudio.paused) currentAudio.play().catch(e=>{});
+        }, { once: true });
+    </script>
 </body>
 </html>
