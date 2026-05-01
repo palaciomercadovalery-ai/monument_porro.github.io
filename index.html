@@ -2,1237 +2,488 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Monumento al Porro · AR</title>
-
-    <!-- Font Awesome para íconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!--
-    ============================================================
-    MindAR + A-Frame
-    MindAR gestiona el reconocimiento de imágenes (.mind).
-    A-Frame renderiza los modelos 3D anclados al target.
-    ============================================================
-    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Monumento al Porro | Realidad Aumentada y Patrimonio Cultural</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- MindAR + A-Frame -->
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
-    <!--
-    Google Model Viewer — se usa solo en la sección hero para
-    una preview decorativa, no en la cámara AR.
-    -->
+    <!-- Model Viewer -->
+    <script type="importmap">
+        { "imports": { "@google/model-viewer": "https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js" } }
+    </script>
     <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
-
     <style>
-        /* ============================================================
-           TOKENS DE DISEÑO
-           Paleta cálida · tipografía Georgia · sensación de bronce
-        ============================================================ */
-        :root {
-            --cream:   #FFF9F0;
-            --gold:    #C49A6C;
-            --gold2:   #e8b87a;
-            --forest:  #2C3E2F;
-            --forest2: #1a2a1d;
-            --dark:    #0a0f0b;
-            --text:    #2C2C2C;
-            --muted:   #5C5C5C;
-            --r28:     28px;
-            --r40:     40px;
-            --ease:    cubic-bezier(.4,0,.2,1);
-        }
+        /* ===== TODOS TUS ESTILOS ORIGINALES (se mantienen igual) ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Georgia, 'Times New Roman', Times, serif; background-color: #FFF9F0; color: #2C2C2C; line-height: 1.5; scroll-behavior: smooth; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .full-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 60px 0; }
+        .full-screen .container { width: 100%; }
+        h1, h2, h3, h4, .nav-links a, .btn, button { font-family: Georgia, 'Times New Roman', Times, serif; }
+        h1 { font-size: 3.2rem; font-weight: 700; letter-spacing: -0.5px; }
+        h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 1.5rem; color: #2C3E2F; text-align: center; }
+        h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-sub { text-align: center; color: #5C5C5C; margin-bottom: 2rem; font-style: italic; }
+        .btn { display: inline-block; background-color: #C49A6C; color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: bold; transition: 0.2s; border: none; cursor: pointer; font-size: 1rem; }
+        .btn-outline { background-color: transparent; border: 2px solid #C49A6C; color: #C49A6C; }
+        .btn-outline:hover { background-color: #C49A6C; color: white; }
+        .btn-sm { padding: 6px 16px; font-size: 0.85rem; }
+        nav { background-color: #FFF9F0; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; padding: 16px 0; }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.7rem; font-weight: 700; color: #2C3E2F; text-decoration: none; }
+        .logo span { color: #C49A6C; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: #2C3E2F; font-weight: 600; }
+        .nav-links a:hover { color: #C49A6C; }
+        .menu-icon { display: none; font-size: 1.8rem; cursor: pointer; }
+        .hero { min-height: 100vh; background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagenes/bombo_maria.jpg') center/cover no-repeat; color: white; display: flex; align-items: center; text-align: center; }
+        .hero .container { width: 100%; }
+        .hero h1 { font-size: 3.8rem; margin-bottom: 1rem; text-shadow: 1px 1px 4px black; }
+        .hero p { font-size: 1.2rem; max-width: 700px; margin: 0 auto 2rem; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-light { background: transparent; border: 2px solid white; color: white; }
+        .btn-light:hover { background: white; color: #2C3E2F; }
+        .bg-alt { background-color: #F5F0E6; }
 
-        /* RESET */
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: Georgia, 'Times New Roman', serif;
-            background: var(--cream);
-            color: var(--text);
-            overflow-x: hidden;
-        }
-
-        /* ============================================================
-           NAVEGACIÓN
-        ============================================================ */
-        nav {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 900;
-            padding: 14px 0;
-            background: rgba(255,249,240,.92);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(196,154,108,.15);
-            transition: box-shadow .3s var(--ease);
-        }
-        nav.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,.08); }
-        .nav-inner {
-            max-width: 1100px; margin: 0 auto;
-            padding: 0 24px;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .logo {
-            font-size: 1.25rem; font-weight: 700;
-            color: var(--forest); text-decoration: none;
-            letter-spacing: -.3px;
-        }
-        .logo em { color: var(--gold); font-style: normal; }
-        .nav-links {
-            display: flex; gap: 2rem; list-style: none;
-        }
-        .nav-links a {
-            text-decoration: none; color: var(--forest);
-            font-size: .9rem; font-weight: 600;
-            transition: color .2s;
-        }
-        .nav-links a:hover { color: var(--gold); }
-        .nav-cta {
-            background: var(--gold); color: #fff !important;
-            padding: 8px 20px; border-radius: 30px;
-        }
-        .nav-cta:hover { background: var(--gold2) !important; color: #fff !important; }
-        .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
-        .hamburger span {
-            display: block; width: 24px; height: 2px;
-            background: var(--forest); border-radius: 2px;
-            margin: 5px 0; transition: all .3s;
-        }
-
-        /* ============================================================
-           HERO — pantalla completa con imagen de fondo y texto centrado
-        ============================================================ */
-        #inicio {
-            min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
-            text-align: center;
-            position: relative; overflow: hidden;
-            background:
-                linear-gradient(0deg, rgba(10,15,11,.72) 0%, rgba(44,62,47,.45) 60%, rgba(10,15,11,.3) 100%),
-                url('imagenes/bombo_maria.jpg') center/cover no-repeat;
-            color: #fff;
-            padding: 100px 24px 60px;
-        }
-        /* Grano de película sutil para textura */
-        #inicio::after {
-            content: '';
-            position: absolute; inset: 0; pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
-            opacity: .5;
-        }
-        .hero-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
-        .hero-pill {
-            display: inline-block;
-            background: rgba(196,154,108,.25);
-            border: 1px solid rgba(196,154,108,.5);
-            color: var(--gold2);
-            padding: 5px 18px; border-radius: 30px;
-            font-size: .72rem; font-weight: 700;
-            letter-spacing: 2px; text-transform: uppercase;
-            margin-bottom: 1.4rem;
-            backdrop-filter: blur(4px);
-        }
-        .hero-inner h1 {
-            font-size: clamp(2.4rem, 7vw, 4.2rem);
-            font-weight: 700; line-height: 1.1;
-            margin-bottom: .6rem;
-            text-shadow: 0 2px 16px rgba(0,0,0,.4);
-        }
-        .hero-inner h1 em {
-            font-style: normal; color: var(--gold2);
-        }
-        .hero-inner p {
-            font-size: clamp(1rem, 2.5vw, 1.2rem);
-            color: rgba(255,255,255,.82);
-            max-width: 540px; margin: 0 auto 2.5rem;
-            line-height: 1.6;
-        }
-        .hero-btn {
-            display: inline-flex; align-items: center; gap: .6rem;
-            background: linear-gradient(135deg, var(--gold), var(--gold2));
-            color: #fff; padding: 15px 36px; border-radius: 50px;
-            font-weight: 700; font-size: 1.05rem;
-            text-decoration: none; border: none; cursor: pointer;
-            font-family: Georgia, serif;
-            box-shadow: 0 8px 32px rgba(196,154,108,.45);
-            transition: transform .25s var(--ease), box-shadow .25s var(--ease);
-        }
-        .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(196,154,108,.55); }
-        /* Indicador de scroll */
-        .scroll-hint {
-            position: absolute; bottom: 28px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; flex-direction: column; align-items: center; gap: 6px;
-            color: rgba(255,255,255,.45); font-size: .7rem;
-            letter-spacing: 1px; text-transform: uppercase;
-            animation: bounce 2s ease-in-out infinite;
-        }
-        .scroll-hint i { font-size: 1.1rem; }
-        @keyframes bounce {
-            0%,100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(6px); }
-        }
-
-        /* ============================================================
-           SECCIÓN AR — el corazón de la app
-        ============================================================ */
+        /* ===== SECCIÓN AR CORREGIDA ===== */
         #ar-camara {
+            background: linear-gradient(160deg, #2C3E2F 0%, #1a2a1d 100%);
+            color: #F5F0E6;
+            padding: 80px 0;
             min-height: 100vh;
-            background: linear-gradient(160deg, var(--forest) 0%, var(--forest2) 55%, var(--dark) 100%);
-            display: flex; align-items: center;
-            padding: 80px 24px;
+            display: flex;
+            align-items: center;
         }
-        .ar-wrap {
-            max-width: 1100px; margin: 0 auto; width: 100%;
-            display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap;
-        }
-
-        /* Panel de instrucciones (izquierda) */
-        .ar-info { flex: 1; min-width: 240px; color: #F5F0E6; }
-        .ar-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--gold), var(--gold2));
-            color: #fff; padding: 4px 14px; border-radius: 30px;
-            font-size: .68rem; letter-spacing: 1.5px; font-weight: 700;
-            text-transform: uppercase; margin-bottom: 1.2rem;
-        }
-        .ar-info h2 {
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
-            color: #F5F0E6; margin-bottom: .7rem; line-height: 1.2;
-        }
-        .ar-info h2 em { color: var(--gold2); font-style: normal; }
-        .ar-info > p {
-            color: rgba(245,240,230,.65); font-size: .92rem;
-            line-height: 1.7; margin-bottom: 2rem;
-        }
-        .steps { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-        .step {
-            display: flex; gap: .9rem; align-items: flex-start;
-        }
-        .step-num {
-            flex-shrink: 0; width: 30px; height: 30px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--gold2));
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: .82rem; color: #fff;
-        }
-        .step p { font-size: .88rem; color: rgba(245,240,230,.8); line-height: 1.5; padding-top: 4px; }
-        .step p strong { color: #F5F0E6; }
-
-        /* Botones */
-        .btn-activar {
-            width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: .7rem;
-            background: linear-gradient(135deg, var(--gold), var(--gold2));
-            color: #fff; padding: 15px 24px; border-radius: 50px;
-            font-weight: 700; font-size: 1rem; font-family: Georgia, serif;
-            border: none; cursor: pointer;
-            box-shadow: 0 6px 24px rgba(196,154,108,.4);
-            transition: transform .2s var(--ease), box-shadow .2s var(--ease);
-        }
-        .btn-activar:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(196,154,108,.5); }
-        .btn-activar:disabled { opacity: .55; cursor: not-allowed; transform: none; }
-        .btn-detener {
-            width: 100%; margin-top: .6rem;
-            display: none; align-items: center; justify-content: center; gap: .6rem;
-            background: transparent;
-            border: 1.5px solid rgba(245,240,230,.2);
-            color: rgba(245,240,230,.65);
-            padding: 11px 20px; border-radius: 50px;
-            font-size: .88rem; font-family: Georgia, serif;
-            cursor: pointer; transition: border-color .2s, color .2s;
-        }
-        .btn-detener:hover { border-color: var(--gold); color: var(--gold); }
-        .notice {
-            margin-top: 1.2rem;
-            background: rgba(255,200,80,.08);
-            border: 1px solid rgba(255,200,80,.2);
-            border-radius: 12px; padding: .75rem 1rem;
-            font-size: .75rem; color: #f0d080;
-            display: flex; gap: .5rem; align-items: flex-start;
-        }
-
-        /* Panel del visor (derecha) */
-        .ar-viewer { flex: 1.4; min-width: 280px; }
-
-        /* Marco de la "pantalla de teléfono" */
-        .phone-shell {
-            position: relative;
-            width: 100%; max-width: 380px; margin: 0 auto;
-            aspect-ratio: 9/19.5;
-            background: var(--dark);
-            border-radius: 36px;
-            border: 2px solid rgba(196,154,108,.25);
-            box-shadow:
-                0 0 0 6px rgba(44,62,47,.5),
-                0 32px 80px rgba(0,0,0,.7);
-            overflow: hidden;
-        }
-        /* Pastilla superior */
-        .phone-shell::before {
-            content: '';
-            position: absolute; top: 10px; left: 50%;
-            transform: translateX(-50%);
-            width: 80px; height: 6px;
-            background: rgba(255,255,255,.08);
-            border-radius: 3px; z-index: 50;
-        }
-
-        /* Estado: placeholder */
-        #ar-placeholder {
-            position: absolute; inset: 0;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 1rem; z-index: 10;
-            background: radial-gradient(ellipse at 50% 40%, #1a2a1d 0%, #0a0f0b 100%);
-            transition: opacity .4s;
-        }
-        #ar-placeholder .icon-ring {
-            width: 80px; height: 80px; border-radius: 50%;
-            border: 2px dashed rgba(196,154,108,.3);
-            display: flex; align-items: center; justify-content: center;
-            animation: pulse-ring 2.5s ease-in-out infinite;
-        }
-        #ar-placeholder .icon-ring i { font-size: 2rem; color: rgba(196,154,108,.5); }
-        @keyframes pulse-ring {
-            0%,100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.08); opacity: .7; }
-        }
-        #ar-placeholder p {
-            color: rgba(255,255,255,.3); font-size: .82rem;
-            text-align: center; padding: 0 2rem;
-        }
-
-        /* Estado: cargando */
-        #ar-loading {
-            position: absolute; inset: 0;
-            display: none; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 1rem; z-index: 20;
-            background: rgba(10,15,11,.95);
-        }
-        .spinner {
-            width: 46px; height: 46px;
-            border: 3px solid rgba(196,154,108,.15);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin .75s linear infinite;
-        }
+        .ar-badge { display: inline-block; background: linear-gradient(135deg, #C49A6C, #e8b87a); color: white; padding: 5px 16px; border-radius: 30px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 1rem; }
+        .mindar-layout { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .mindar-instructions { flex: 1; min-width: 260px; }
+        .mindar-instructions h3 { color: #C49A6C; font-size: 1.2rem; margin-bottom: 1rem; }
+        .ar-step { display: flex; gap: 0.8rem; margin-bottom: 1rem; }
+        .ar-step-num { background: #C49A6C; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .ar-step p { color: #d4e8d4; }
+        .btn-mindar-activar { background: linear-gradient(135deg, #C49A6C, #e8b87a); color: white; border: none; padding: 14px; border-radius: 40px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 1rem; font-size: 1rem; }
+        .btn-mindar-detener { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #d4e8d4; padding: 10px; border-radius: 40px; cursor: pointer; width: 100%; margin-top: 0.5rem; display: none; }
+        .ar-warning { background: rgba(255,200,100,0.1); border: 1px solid rgba(255,200,100,0.3); border-radius: 12px; padding: 0.8rem; margin-top: 1rem; font-size: 0.78rem; color: #f0d080; display: flex; gap: 0.5rem; }
+        .mindar-viewer-panel { flex: 2; min-width: 300px; }
+        .ar-screen { position: relative; width: 100%; aspect-ratio: 9/16; max-height: 620px; background: #0a0f0b; border-radius: 28px; overflow: hidden; border: 2px solid rgba(196,154,108,0.3); }
+        #mindar-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: rgba(255,255,255,0.5); background: radial-gradient(#1a2a1d, #0a0f0b); z-index: 10; }
+        #mindar-loading { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; z-index: 20; border-radius: 28px; }
+        .loading-spinner { width: 48px; height: 48px; border: 3px solid rgba(196,154,108,0.3); border-top-color: #C49A6C; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #ar-loading p { color: rgba(255,255,255,.55); font-size: .82rem; text-align: center; }
+        #ar-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: none; }
+        .scan-frame { position: absolute; inset: 0; pointer-events: none; display: none; z-index: 15; }
+        .scan-corner { position: absolute; width: 40px; height: 40px; border-color: #C49A6C; border-style: solid; }
+        .tl { top: 12%; left: 8%; border-width: 3px 0 0 3px; }
+        .tr { top: 12%; right: 8%; border-width: 3px 3px 0 0; }
+        .bl { bottom: 12%; left: 8%; border-width: 0 0 3px 3px; }
+        .br { bottom: 12%; right: 8%; border-width: 0 3px 3px 0; }
+        .scan-line { position: absolute; left: 8%; right: 8%; height: 2px; background: linear-gradient(90deg, transparent, #C49A6C, transparent); animation: scanMove 2s infinite; }
+        @keyframes scanMove { 0% { top: 12%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 88%; opacity: 0; } }
+        #mindar-hud { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; z-index: 25; display: none; }
+        .detected-card { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); border-radius: 30px; padding: 8px 20px; display: inline-block; border: 1px solid #C49A6C; opacity: 0; transition: opacity 0.2s; }
+        .detected-card.visible { opacity: 1; }
+        #mindar-hint { text-align: center; margin-top: 0.8rem; display: none; color: #a8c4a8; font-size: 0.75rem; }
 
-        /* Contenedor A-Frame */
-        #ar-scene-wrap {
-            display: none;
-            position: absolute; inset: 0; z-index: 5;
-        }
-
-        /* Marco de escaneo animado */
-        #scan-frame {
-            position: absolute; inset: 0; pointer-events: none; z-index: 30;
-            display: none;
-        }
-        .corner {
-            position: absolute; width: 36px; height: 36px;
-            border-color: rgba(196,154,108,.7); border-style: solid;
-        }
-        .corner.tl { top: 16%; left: 7%; border-width: 2.5px 0 0 2.5px; border-radius: 5px 0 0 0; }
-        .corner.tr { top: 16%; right: 7%; border-width: 2.5px 2.5px 0 0; border-radius: 0 5px 0 0; }
-        .corner.bl { bottom: 16%; left: 7%; border-width: 0 0 2.5px 2.5px; border-radius: 0 0 0 5px; }
-        .corner.br { bottom: 16%; right: 7%; border-width: 0 2.5px 2.5px 0; border-radius: 0 0 5px 0; }
-        .scan-line {
-            position: absolute; left: 7%; right: 7%; height: 1.5px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            animation: scanMove 2.8s ease-in-out infinite;
-        }
-        @keyframes scanMove {
-            0%   { top: 16%; opacity: 0; }
-            8%   { opacity: 1; }
-            92%  { opacity: 1; }
-            100% { top: 84%; opacity: 0; }
-        }
-
-        /* HUD — tarjeta de "detectado" */
-        #ar-hud {
-            position: absolute; inset: 0; pointer-events: none; z-index: 35;
-            display: none;
-        }
-        #detected-pill {
-            position: absolute; bottom: 22px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,.65);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--gold);
-            border-radius: 50px; padding: 7px 20px;
-            white-space: nowrap; text-align: center;
-            opacity: 0; transition: opacity .35s var(--ease);
-        }
-        #detected-pill.show { opacity: 1; }
-        #detected-pill .label {
-            font-size: .62rem; letter-spacing: 1.5px;
-            color: var(--gold); font-weight: 700; text-transform: uppercase;
-        }
-        #detected-pill .name {
-            font-size: .88rem; color: #fff; font-weight: 700; margin-left: 6px;
-        }
-
-        /* Sugerencia táctil */
-        #ar-hint {
-            text-align: center; margin-top: 10px; display: none;
-        }
-        #ar-hint small { color: rgba(245,240,230,.4); font-size: .72rem; }
-
-        /* ============================================================
-           SECCIÓN HISTORIA — solo informativa, discreta
-        ============================================================ */
-        #historia {
-            padding: 100px 24px;
-            background: var(--cream);
-        }
-        .historia-inner {
-            max-width: 800px; margin: 0 auto; text-align: center;
-        }
-        .historia-inner h2 {
-            font-size: clamp(1.8rem, 4vw, 2.4rem);
-            color: var(--forest); margin-bottom: .5rem;
-        }
-        .historia-inner .sub {
-            color: var(--muted); font-style: italic; margin-bottom: 2.5rem;
-        }
-        .historia-inner p {
-            font-size: 1rem; color: var(--text);
-            line-height: 1.8; margin-bottom: 1.2rem;
-        }
-        blockquote {
-            background: #F5F0E6;
-            border-left: 4px solid var(--gold);
-            padding: 1rem 1.5rem; border-radius: 0 12px 12px 0;
-            font-style: italic; color: var(--forest); margin: 2rem 0;
-            text-align: left;
-        }
-        .timeline {
-            display: flex; justify-content: center; gap: 0;
-            margin-top: 3rem; flex-wrap: wrap;
-        }
-        .tl-item {
-            display: flex; flex-direction: column; align-items: center;
-            flex: 1; min-width: 160px; padding: 0 1rem;
-            position: relative;
-        }
-        .tl-item:not(:last-child)::after {
-            content: '';
-            position: absolute; top: 16px; right: 0;
-            width: 1px; height: 30px;
-            background: rgba(196,154,108,.3);
-        }
-        .tl-year {
-            font-size: 1.4rem; font-weight: 700; color: var(--gold);
-            line-height: 1;
-        }
-        .tl-dot {
-            width: 8px; height: 8px; background: var(--gold);
-            border-radius: 50%; margin: .5rem 0;
-        }
-        .tl-text { font-size: .78rem; color: var(--muted); text-align: center; line-height: 1.4; }
-
-        /* ============================================================
-           SECCIÓN UBICACIÓN
-        ============================================================ */
-        #ubicacion {
-            padding: 80px 24px;
-            background: #F5F0E6;
-        }
-        .ubi-inner {
-            max-width: 1100px; margin: 0 auto;
-        }
-        .ubi-inner h2 {
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
-            color: var(--forest); margin-bottom: .5rem; text-align: center;
-        }
-        .ubi-inner .sub {
-            text-align: center; color: var(--muted); font-style: italic; margin-bottom: 2.5rem;
-        }
-        .ubi-grid {
-            display: flex; gap: 2rem; flex-wrap: wrap; align-items: stretch;
-        }
-        .ubi-info { flex: 1; min-width: 240px; }
-        .ubi-row {
-            display: flex; gap: .8rem; align-items: flex-start;
-            margin-bottom: 1rem; font-size: .9rem; line-height: 1.5;
-        }
-        .ubi-row i { color: var(--gold); width: 18px; flex-shrink: 0; padding-top: 2px; }
-        .ubi-map {
-            flex: 1.2; min-width: 260px; min-height: 300px;
-            border-radius: var(--r28); overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0,0,0,.1);
-        }
-        .ubi-map iframe { width: 100%; height: 100%; min-height: 300px; border: 0; }
-        .btn-maps {
-            display: inline-flex; align-items: center; gap: .5rem;
-            margin-top: 1.2rem;
-            background: var(--gold); color: #fff;
-            padding: 10px 22px; border-radius: 50px;
-            text-decoration: none; font-size: .88rem; font-weight: 700;
-            transition: background .2s;
-        }
-        .btn-maps:hover { background: var(--gold2); }
-
-        /* ============================================================
-           FOOTER
-        ============================================================ */
-        footer {
-            background: var(--forest2); color: #F5F0E6;
-            padding: 3rem 24px 2rem;
-        }
-        .footer-grid {
-            max-width: 1100px; margin: 0 auto;
-            display: flex; gap: 3rem; flex-wrap: wrap;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid rgba(255,255,255,.08);
-        }
-        .footer-brand h3 { font-size: 1.2rem; margin-bottom: .3rem; }
-        .footer-brand p { font-size: .8rem; color: rgba(245,240,230,.5); }
-        .footer-col h4 { font-size: .8rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: .8rem; }
-        .footer-col p { font-size: .82rem; color: rgba(245,240,230,.65); margin-bottom: .4rem; }
-        .footer-col a { display: block; font-size: .82rem; color: rgba(245,240,230,.55); text-decoration: none; margin-bottom: .3rem; }
-        .footer-col a:hover { color: var(--gold); }
-        .badge-list { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .4rem; }
-        .badge {
-            background: rgba(255,255,255,.07);
-            padding: 2px 10px; border-radius: 30px;
-            font-size: .73rem; color: rgba(245,240,230,.6);
-        }
-        .copyright {
-            max-width: 1100px; margin: 1.5rem auto 0;
-            font-size: .72rem; color: rgba(245,240,230,.3);
-            text-align: center;
-        }
-
-        /* ============================================================
-           OVERLAY "TOCA PARA DESBLOQUEAR AUDIO"
-           Aparece si el navegador bloqueó el autoplay
-        ============================================================ */
-        #audio-unlock {
-            display: none;
-            position: fixed; inset: 0; z-index: 9999;
-            background: rgba(0,0,0,.85);
-            align-items: center; justify-content: center;
-            flex-direction: column; gap: 1rem;
-            color: #fff; text-align: center;
-            padding: 2rem;
-        }
-        #audio-unlock i { font-size: 3rem; color: var(--gold); }
-        #audio-unlock p { font-size: 1rem; max-width: 300px; }
-        #audio-unlock button {
-            background: var(--gold); color: #fff;
-            border: none; border-radius: 50px;
-            padding: 14px 32px; font-size: 1rem;
-            font-family: Georgia, serif; font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* ============================================================
-           MOBILE RESPONSIVE
-        ============================================================ */
+        /* ===== TUS OTRAS SECCIONES (instrumentos, historia, etc.) se mantienen ===== */
+        .grid-instrumentos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; }
+        .card-content { padding: 1.5rem; }
+        .card-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; }
+        .historia-grid, .ubicacion-grid { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .historia-texto, .ubicacion-info { flex: 2; }
+        .historia-texto blockquote { background: #F5F0E6; padding: 1rem; border-left: 4px solid #C49A6C; margin: 1rem 0; }
+        .timeline-visual, .mapa { flex: 1; background: white; border-radius: 24px; padding: 1.5rem; }
+        .timeline-line { border-left: 3px solid #C49A6C; padding-left: 1.5rem; margin: 1rem 0; }
+        .timeline-event { margin-bottom: 1rem; }
+        .timeline-year { font-weight: bold; color: #C49A6C; }
+        .mapa { min-height: 300px; overflow: hidden; }
+        .mapa iframe { width: 100%; height: 100%; border: 0; }
+        .testimonios-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+        .testimonio { background: white; padding: 1.5rem; border-radius: 24px; border-left: 4px solid #C49A6C; }
+        footer { background-color: #2C3E2F; color: #F5F0E6; padding: 2rem 0; }
+        .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; }
+        .student-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .student-list span { background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 30px; }
+        .footer-links a { display: block; color: #F5F0E6; text-decoration: none; margin-bottom: 0.4rem; }
+        .copyright { text-align: center; font-size: 0.75rem; border-top: 1px solid #5C6E5C; padding-top: 1rem; margin-top: 1rem; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; max-width: 500px; width: 90%; border-radius: 28px; padding: 2rem; position: relative; }
+        .close-modal { position: absolute; top: 1rem; right: 1.5rem; font-size: 1.8rem; cursor: pointer; color: #C49A6C; }
         @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hamburger { display: block; }
-
-            .ar-wrap { flex-direction: column-reverse; gap: 2rem; }
-            .phone-shell { max-width: 100%; aspect-ratio: 9/16; }
-
-            .timeline { flex-direction: column; align-items: center; gap: 1.5rem; }
-            .tl-item::after { display: none; }
-        }
-        @media (max-width: 480px) {
-            .hero-btn { padding: 13px 26px; font-size: .95rem; }
+            .nav-links { display: none; flex-direction: column; background: #FFF9F0; padding: 1rem; }
+            .nav-links.active { display: flex; }
+            .menu-icon { display: block; }
+            .hero h1 { font-size: 2.2rem; }
+            .mindar-layout { flex-direction: column-reverse; }
         }
     </style>
 </head>
 <body>
 
-<!--
-=======================================================
-NAVEGACIÓN FIJA
-=======================================================
--->
-<nav id="mainNav">
-    <div class="nav-inner">
-        <a href="#inicio" class="logo">Monumento <em>al Porro</em></a>
+<nav>
+    <div class="container nav-flex">
+        <a href="#" class="logo">Monumento <span>al Porro</span></a>
+        <div class="menu-icon" id="menuToggle"><i class="fas fa-bars"></i></div>
         <ul class="nav-links" id="navLinks">
+            <li><a href="#inicio">Inicio</a></li>
             <li><a href="#ar-camara">Experiencia AR</a></li>
+            <li><a href="#instrumentos">Instrumentos</a></li>
             <li><a href="#historia">Historia</a></li>
             <li><a href="#ubicacion">Ubicación</a></li>
-            <li><a href="#ar-camara" class="nav-cta">Iniciar AR</a></li>
         </ul>
-        <button class="hamburger" id="hamburger" aria-label="Menú">
-            <span></span><span></span><span></span>
-        </button>
     </div>
 </nav>
 
-<!--
-=======================================================
-OVERLAY — Desbloquear audio (si el navegador lo bloqueó)
-=======================================================
--->
-<div id="audio-unlock">
-    <i class="fas fa-volume-up"></i>
-    <p>Toca para habilitar el sonido de los instrumentos</p>
-    <button id="btn-unlock">Activar sonido</button>
-</div>
-
 <main>
-
-    <!-- ============================================================
-         HERO
-    ============================================================ -->
-    <section id="inicio">
-        <div class="hero-inner">
-            <span class="hero-pill">⟡ Patrimonio cultural inmaterial de Colombia</span>
-            <h1>Monumento<br><em>al Porro</em></h1>
-            <p>Apunta tu cámara a las estatuas de bronce y descubre sus instrumentos en Realidad Aumentada.</p>
-            <a href="#ar-camara" class="hero-btn">
-                <i class="fas fa-camera"></i> Iniciar experiencia AR
-            </a>
-        </div>
-        <div class="scroll-hint">
-            <i class="fas fa-chevron-down"></i>
-            <span>Desplaza</span>
+    <section id="inicio" class="hero">
+        <div class="container">
+            <h1>Monumento al Porro</h1>
+            <p>Patrimonio cultural inmaterial de Colombia – Realidad Aumentada para vivir la música del Sinú</p>
+            <div class="hero-buttons">
+                <a href="#ar-camara" class="btn">Experiencia AR con Cámara</a>
+                <a href="#instrumentos" class="btn btn-light">Conoce los instrumentos</a>
+            </div>
         </div>
     </section>
 
-    <!-- ============================================================
-         EXPERIENCIA AR — SECCIÓN PRINCIPAL
-         Lógica: MindAR carga los 7 archivos .mind individuales.
-         Cuando detecta una imagen, muestra el modelo 3D y
-         reproduce el sonido en bucle. Al perder la detección,
-         pausa el sonido.
-    ============================================================ -->
+    <!-- SECCIÓN AR CORREGIDA -->
     <section id="ar-camara">
-        <div class="ar-wrap">
+        <div class="container">
+            <div style="text-align:center;"><span class="ar-badge">⟡ Realidad Aumentada Inmersiva</span></div>
+            <h2>Experiencia AR con Cámara</h2>
+            <p class="section-sub">Apunta la cámara a una de las 7 estatuas. El modelo 3D y el sonido se activan al instante.</p>
 
-            <!-- Panel de instrucciones (izquierda) -->
-            <div class="ar-info">
-                <span class="ar-badge">Realidad Aumentada</span>
-                <h2>Escucha y ve los<br><em>instrumentos del porro</em></h2>
-                <p>Activa la cámara y apúntala hacia cualquiera de las 7 estatuas de bronce. El modelo 3D y su sonido se activarán automáticamente — sin tocar nada más.</p>
+            <div class="mindar-layout">
+                <div class="mindar-instructions">
+                    <h3>¿Cómo usar?</h3>
+                    <div class="ar-step"><div class="ar-step-num">1</div><p><strong>Activa la cámara</strong> con el botón.</p></div>
+                    <div class="ar-step"><div class="ar-step-num">2</div><p><strong>Apunta</strong> a una estatua de bronce.</p></div>
+                    <div class="ar-step"><div class="ar-step-num">3</div><p><strong>El modelo 3D</strong> aparece anclado y sonido en bucle.</p></div>
 
-                <div class="steps">
-                    <div class="step">
-                        <div class="step-num">1</div>
-                        <p><strong>Activa la cámara</strong> y concede permisos cuando el navegador lo solicite.</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-num">2</div>
-                        <p><strong>Apunta hacia una estatua</strong> de bronce del monumento.</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-num">3</div>
-                        <p><strong>El modelo 3D aparecerá</strong> anclado a la estatua y su sonido sonará en bucle.</p>
-                    </div>
+                    <button class="btn-mindar-activar" id="startARBtn">📷 Activar Cámara AR</button>
+                    <button class="btn-mindar-detener" id="stopARBtn">🛑 Detener cámara</button>
+
+                    <div class="ar-warning"><i class="fas fa-info-circle"></i> Requiere HTTPS. Si el audio no suena, toca la pantalla una vez.</div>
                 </div>
 
-                <!-- Botón principal -->
-                <button class="btn-activar" id="btnActivar">
-                    <i class="fas fa-camera"></i> Activar Cámara AR
-                </button>
-                <!-- Botón detener (oculto hasta que la cámara esté activa) -->
-                <button class="btn-detener" id="btnDetener">
-                    <i class="fas fa-stop-circle"></i> Detener cámara
-                </button>
+                <div class="mindar-viewer-panel">
+                    <div class="ar-screen" id="arScreen">
+                        <div id="mindar-placeholder"><i class="fas fa-camera-retro"></i><p>Activa la cámara para comenzar</p></div>
+                        <div id="mindar-loading"><div class="loading-spinner"></div><p>Iniciando reconocimiento...</p></div>
 
-                <div class="notice">
-                    <i class="fas fa-info-circle" style="margin-top:1px;"></i>
-                    <span>Requiere <strong>HTTPS</strong> y permisos de cámara. Recomendado: Chrome en Android, Safari en iOS.</span>
-                </div>
-            </div>
-
-            <!-- Panel del visor (derecha) -->
-            <div class="ar-viewer">
-                <!-- Marco de teléfono decorativo -->
-                <div class="phone-shell" id="phoneShell">
-
-                    <!-- Estado 1: pantalla apagada (placeholder) -->
-                    <div id="ar-placeholder">
-                        <div class="icon-ring">
-                            <i class="fas fa-camera-retro"></i>
-                        </div>
-                        <p>Activa la cámara para comenzar<br>la experiencia AR</p>
-                    </div>
-
-                    <!-- Estado 2: cargando -->
-                    <div id="ar-loading">
-                        <div class="spinner"></div>
-                        <p>Iniciando reconocimiento de imágenes…</p>
-                    </div>
-
-                    <!--
-                    =====================================================
-                    ESCENA A-FRAME + MINDAR
-                    Se usan 7 entidades mindar-image-target independientes,
-                    una por cada archivo .mind individual.
-                    Cada target tiene:
-                      - Un modelo GLB (rotación en Y)
-                      - Una entidad de sonido
-                    Los eventos "targetFound" y "targetLost" controlan
-                    la reproducción del audio vía JS puro (más confiable
-                    que el componente de sonido de A-Frame en móviles).
-                    =====================================================
-                    -->
-                    <div id="ar-scene-wrap">
-                        <a-scene
-                            id="arScene"
-                            mindar-image="imageTargetSrc: null; autoStart: false; uiLoading: no; uiScanning: no; uiError: no; filterMinCF: 0.001; filterBeta: 0.001; missTolerance: 5;"
-                            embedded
-                            vr-mode-ui="enabled: false"
-                            renderer="antialias: true; colorManagement: true;"
-                            style="width:100%; height:100%; position:absolute; top:0; left:0;">
-
+                        <!-- Escena A-Frame estática (no creada dinámicamente) -->
+                        <a-scene id="arScene" mindar-image="imageTargetSrc: null; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;"
+                                 embedded vr-mode-ui="enabled: false" renderer="antialias: true"
+                                 style="display: none; width:100%; height:100%; position:absolute; top:0; left:0;">
                             <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-                            <!-- 1. PLATILLOS -->
-                            <a-entity id="target-platillos"
-                                mindar-image-target="targetIndex: 0">
-                                <a-entity
-                                    gltf-model="./modelos/PLATILLOS.glb"
-                                    scale="0.5 0.5 0.5"
-                                    position="0 0 0"
-                                    animation="property: rotation; to: 0 360 0; loop: true; dur: 18000; easing: linear">
-                                </a-entity>
+                            <!-- Platillos -->
+                            <a-entity mindar-image-target="imageTargetSrc: ./targets/platillos.mind;">
+                                <a-entity gltf-model="./modelos/PLATILLOS.glb" scale="0.5 0.5 0.5" animation="property: rotation; to: 0 360 0; loop: true; dur: 20000;"></a-entity>
+                                <a-entity sound="src: ./sonidos/platillos.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
                             </a-entity>
-
-                            <!-- 2. REDOBLANTE -->
-                            <a-entity id="target-redoblante"
-                                mindar-image-target="targetIndex: 1">
-                                <a-entity
-                                    gltf-model="./modelos/REDOBLANTE.glb"
-                                    scale="0.5 0.5 0.5"
-                                    position="0 0 0"
-                                    animation="property: rotation; to: 0 360 0; loop: true; dur: 16000; easing: linear">
-                                </a-entity>
+                            <!-- Redoblante -->
+                            <a-entity mindar-image-target="imageTargetSrc: ./targets/redoblante.mind;">
+                                <a-entity gltf-model="./modelos/REDOBLANTE.glb" scale="0.5 0.5 0.5" animation="property: rotation; to: 0 360 0; loop: true; dur: 18000;"></a-entity>
+                                <a-entity sound="src: ./sonidos/redoblante.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
                             </a-entity>
-
-                            <!-- 3. TROMPETA -->
-                            <a-entity id="target-trompeta"
-                                mindar-image-target="targetIndex: 2">
-                                <a-entity
-                                    gltf-model="./modelos/TROMPETA.glb"
-                                    scale="0.5 0.5 0.5"
-                                    position="0 0 0"
-                                    animation="property: rotation; to: 0 360 0; loop: true; dur: 14000; easing: linear">
-                                </a-entity>
+                            <!-- Trompeta -->
+                            <a-entity mindar-image-target="imageTargetSrc: ./targets/trompeta.mind;">
+                                <a-entity gltf-model="./modelos/TROMPETA.glb" scale="0.5 0.5 0.5" animation="property: rotation; to: 0 360 0; loop: true; dur: 15000;"></a-entity>
+                                <a-entity sound="src: ./sonidos/trompeta.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
                             </a-entity>
-
-                            <!-- 4. BOMBO -->
-                            <a-entity id="target-bombo"
-                                mindar-image-target="targetIndex: 3">
-                                <a-entity
-                                    gltf-model="./modelos/BOMBO.glb"
-                                    scale="0.5 0.5 0.5"
-                                    position="0 0 0"
-                                    animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear">
-                                </a-entity>
+                            <!-- Bombo -->
+                            <a-entity mindar-image-target="imageTargetSrc: ./targets/bombo.mind;">
+                                <a-entity gltf-model="./modelos/BOMBO.glb" scale="0.5 0.5 0.5" animation="property: rotation; to: 0 360 0; loop: true; dur: 22000;"></a-entity>
+                                <a-entity sound="src: ./sonidos/bombo.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
                             </a-entity>
-
-                            <!-- 5. CLARINETE -->
-                            <a-entity id="target-clarinete"
-                                mindar-image-target="targetIndex: 4">
-                                <a-entity
-                                    gltf-model="./modelos/CLARINETE.glb"
-                                    scale="0.5 0.5 0.5"
-                                    position="0 0 0"
-                                    animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
-                                </a-entity>
+                            <!-- Clarinete -->
+                            <a-entity mindar-image-target="imageTargetSrc: ./targets/clarinete.mind;">
+                                <a-entity gltf-model="./modelos/CLARINETE.glb" scale="0.5 0.5 0.5" animation="property: rotation; to: 0 360 0; loop: true; dur: 16000;"></a-entity>
+                                <a-entity sound="src: ./sonidos/clarinete.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
                             </a-entity>
-
-                            <!-- 6. TROMBÓN -->
-                            <a-entity id="target-trombon"
-                                mindar-image-target="targetIndex: 5">
-                                <a-entity
-                                    gltf-model="./modelos/TROMBON.glb"
-                                    scale="0.5 0.5 0.5"
-                                    position="0 0 0"
-                                    animation="property: rotation; to: 0 360 0; loop: true; dur: 17000; easing: linear">
-                                </a-entity>
+                            <!-- Trombón -->
+                            <a-entity mindar-image-target="imageTargetSrc: ./targets/trombon.mind;">
+                                <a-entity gltf-model="./modelos/TROMBON.glb" scale="0.5 0.5 0.5" animation="property: rotation; to: 0 360 0; loop: true; dur: 19000;"></a-entity>
+                                <a-entity sound="src: ./sonidos/trombon.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
                             </a-entity>
-
-                            <!-- 7. MARÍA VARILLA -->
-                            <a-entity id="target-maria-varilla"
-                                mindar-image-target="targetIndex: 6">
-                                <a-entity
-                                    gltf-model="./modelos/MARIA_VARILLA.glb"
-                                    scale="0.5 0.5 0.5"
-                                    position="0 0 0"
-                                    animation="property: rotation; to: 0 360 0; loop: true; dur: 19000; easing: linear">
-                                </a-entity>
+                            <!-- María Varilla -->
+                            <a-entity mindar-image-target="imageTargetSrc: ./targets/maria_varilla.mind;">
+                                <a-entity gltf-model="./modelos/MARIA_VARILLA.glb" scale="0.5 0.5 0.5" animation="property: rotation; to: 0 360 0; loop: true; dur: 20000;"></a-entity>
+                                <a-entity sound="src: ./sonidos/maria_varilla.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
                             </a-entity>
-
                         </a-scene>
+
+                        <div class="scan-frame" id="scanFrame"><div class="scan-corner tl"></div><div class="scan-corner tr"></div><div class="scan-corner bl"></div><div class="scan-corner br"></div><div class="scan-line"></div></div>
+                        <div id="mindar-hud"><div class="detected-card" id="detectedCard"><span>🔍 DETECTADO</span> <strong id="detectedName">---</strong></div></div>
                     </div>
-
-                    <!-- Marco de escaneo animado (visible mientras la cámara está activa) -->
-                    <div id="scan-frame">
-                        <div class="corner tl"></div>
-                        <div class="corner tr"></div>
-                        <div class="corner bl"></div>
-                        <div class="corner br"></div>
-                        <div class="scan-line"></div>
-                    </div>
-
-                    <!-- HUD: muestra el nombre del instrumento detectado -->
-                    <div id="ar-hud">
-                        <div id="detected-pill">
-                            <span class="label">Detectado</span>
-                            <span class="name" id="detectedName">—</span>
-                        </div>
-                    </div>
-
-                </div><!-- /phone-shell -->
-
-                <!-- Sugerencia de uso -->
-                <div id="ar-hint">
-                    <small><i class="fas fa-hand-pointer"></i> Mantén la cámara estable sobre la estatua</small>
+                    <div id="mindar-hint"><small><i class="fas fa-hand-pointer"></i> Mantén la cámara estable sobre la estatua</small></div>
                 </div>
-            </div><!-- /ar-viewer -->
-
-        </div><!-- /ar-wrap -->
+            </div>
+        </div>
     </section>
 
-    <!-- ============================================================
-         HISTORIA — sección breve e informativa
-    ============================================================ -->
-    <section id="historia">
-        <div class="historia-inner">
+    <!-- INSTRUMENTOS -->
+    <section id="instrumentos" class="full-screen bg-alt">
+        <div class="container">
+            <h2>Los instrumentos del porro sinuano</h2>
+            <p class="section-sub">Toca "Ver en RA" para proyectar el modelo 3D en tu entorno</p>
+            <div class="grid-instrumentos" id="instrumentosGrid"></div>
+        </div>
+    </section>
+
+    <!-- HISTORIA -->
+    <section id="historia" class="full-screen">
+        <div class="container">
             <h2>Historia del porro sinuano</h2>
-            <p class="sub">Patrimonio vivo del río Sinú</p>
-            <p>El <strong>porro sinuano</strong> es un género musical y de danza tradicional de la región de Córdoba, nacido de la fusión de ritmos africanos, indígenas zenú y europeos. Durante siglos las bandas de viento populares lo llevaron por pueblos y plazas del Caribe colombiano.</p>
-            <p>En <strong>2006</strong> se inauguró el Monumento al Porro en la glorieta de la Terminal de Montería: siete estatuas de bronce que inmortalizan a los músicos y a la bailarina <em>María Varilla</em>. En <strong>2018</strong> el Ministerio de Cultura declaró el porro sinuano <strong>Patrimonio Cultural Inmaterial de Colombia</strong>.</p>
-            <blockquote>"El porro sinuano es patrimonio cultural de nuestra nación"<br><strong>— Ministerio de Cultura, 2018</strong></blockquote>
-
-            <div class="timeline">
-                <div class="tl-item">
-                    <div class="tl-year">2006</div>
-                    <div class="tl-dot"></div>
-                    <div class="tl-text">Inauguración del<br>Monumento al Porro</div>
+            <div class="historia-grid">
+                <div class="historia-texto">
+                    <p>El porro sinuano es un género tradicional de la región del Sinú...</p>
+                    <blockquote>"El porro sinuano es patrimonio cultural de nuestra nación" — Ministerio de Cultura, 2018</blockquote>
                 </div>
-                <div class="tl-item">
-                    <div class="tl-year">2018</div>
-                    <div class="tl-dot"></div>
-                    <div class="tl-text">Declaratoria<br>Patrimonio Inmaterial</div>
-                </div>
-                <div class="tl-item">
-                    <div class="tl-year">2026</div>
-                    <div class="tl-dot"></div>
-                    <div class="tl-text">Proyecto AR<br>UPB Montería</div>
+                <div class="timeline-visual">
+                    <h3>Cronograma</h3>
+                    <div class="timeline-line">
+                        <div class="timeline-event"><div class="timeline-year">2006</div>Inauguración del Monumento</div>
+                        <div class="timeline-event"><div class="timeline-year">2018</div>Patrimonio Cultural Inmaterial</div>
+                        <div class="timeline-event"><div class="timeline-year">2026</div>Proyecto RA</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ============================================================
-         UBICACIÓN
-    ============================================================ -->
-    <section id="ubicacion">
-        <div class="ubi-inner">
+    <!-- UBICACIÓN -->
+    <section id="ubicacion" class="full-screen bg-alt">
+        <div class="container">
             <h2>Ubicación</h2>
-            <p class="sub">Glorieta de la Terminal de Transportes, Montería</p>
-            <div class="ubi-grid">
-                <div class="ubi-info">
-                    <div class="ubi-row"><i class="fas fa-map-marker-alt"></i><span>Carrera 1 #37, Centro, Montería, Córdoba</span></div>
-                    <div class="ubi-row"><i class="fas fa-users"></i><span>7 estatuas de bronce: seis músicos y la bailarina María Varilla</span></div>
-                    <div class="ubi-row"><i class="far fa-clock"></i><span><strong>Horario:</strong> abierto 24 h (recomendado 8 am – 6 pm)</span></div>
-                    <div class="ubi-row"><i class="fas fa-ticket-alt"></i><span><strong>Entrada:</strong> gratuita</span></div>
-                    <div class="ubi-row"><i class="fas fa-city"></i><span>Cerca: Plaza Cultural del Sinú, Ronda del Sinú, Muelle Turístico</span></div>
-                    <a href="https://maps.google.com/?q=Carrera+1+%2337+Montería+Córdoba" target="_blank" rel="noopener" class="btn-maps">
-                        <i class="fas fa-map"></i> Abrir en Google Maps
-                    </a>
+            <div class="ubicacion-grid">
+                <div class="ubicacion-info">
+                    <p><i class="fas fa-map-marker-alt"></i> Glorieta Terminal de Transportes, Montería</p>
+                    <p><i class="fas fa-arrows-up-down"></i> 7 estatuas de bronce: 6 músicos y María Varilla</p>
+                    <p><i class="far fa-clock"></i> Abierto 24h</p>
+                    <a href="https://maps.google.com/?q=Carrera+1+con+calle+37+Montería" target="_blank" class="btn btn-sm">Abrir en Google Maps</a>
                 </div>
-                <div class="ubi-map">
-                    <iframe
-                        src="https://maps.google.com/maps?q=Carrera%201%20con%20calle%2037%2C%20Monter%C3%ADa%2C%20C%C3%B3rdoba&z=16&output=embed"
-                        allowfullscreen loading="lazy" title="Ubicación del Monumento al Porro">
-                    </iframe>
-                </div>
+                <div class="mapa"><iframe src="https://maps.google.com/maps?q=Carrera%201%20con%20calle%2037%2C%20Monter%C3%ADa&z=16&output=embed" allowfullscreen></iframe></div>
             </div>
         </div>
     </section>
 
+    <!-- TESTIMONIOS -->
+    <section id="testimonios" class="full-screen">
+        <div class="container">
+            <h2>Visitantes opinan</h2>
+            <div class="testimonios-grid">
+                <div class="testimonio"><i class="fas fa-quote-left"></i><p>"Increíble ver el clarinete en 3D"</p><strong>— María José, UPB</strong></div>
+                <div class="testimonio"><i class="fas fa-quote-left"></i><p>"La RA acerca el folclor a los jóvenes"</p><strong>— Ana Martínez</strong></div>
+                <div class="testimonio"><i class="fas fa-quote-left"></i><p>"El reconocimiento es muy rápido"</p><strong>— Iván Molina</strong></div>
+            </div>
+        </div>
+    </section>
 </main>
 
-<!-- ============================================================
-     FOOTER
-============================================================ -->
 <footer>
-    <div class="footer-grid">
-        <div class="footer-brand">
-            <h3>Monumento al Porro</h3>
-            <p>Patrimonio cultural inmaterial de Colombia</p>
-        </div>
-        <div class="footer-col">
-            <h4>Proyecto</h4>
-            <p>Universidad Pontificia Bolivariana</p>
-            <p>Ingeniería Industrial · 2026</p>
-            <p>Proyecto Integrador I</p>
-            <p><i class="fas fa-envelope" style="margin-right:4px;"></i>proyecto.monumento@upb.edu.co</p>
-        </div>
-        <div class="footer-col">
-            <h4>Estudiantes</h4>
-            <div class="badge-list">
-                <span class="badge">Camila Malo</span>
-                <span class="badge">Juan Diego Cárdenas</span>
-                <span class="badge">Mayvic Arroyo</span>
-                <span class="badge">Valentina Bejarano</span>
-                <span class="badge">Valery Palacio</span>
+    <div class="container">
+        <div class="footer-content">
+            <div><h4>Monumento al Porro</h4><p>Patrimonio cultural inmaterial de Colombia</p></div>
+            <div class="footer-contact">
+                <div><p><i class="fas fa-envelope"></i> proyecto.monumento@upb.edu.co</p><p><strong>Estudiantes:</strong> Camila Malo, Juan Diego Cárdenas, Mayvic Arroyo, Valentina Bejarano, Valery Palacio</p></div>
+                <div><p><strong>Docente:</strong> Cristian Javier Cano Mogollón</p><p>UPB - Ingeniería Industrial 2026</p></div>
             </div>
-            <p style="margin-top:.6rem;"><strong style="color:var(--gold);">Docente:</strong> Cristian Javier Cano Mogollón</p>
+            <div class="footer-links"><a href="#inicio">Inicio</a><a href="#ar-camara">AR</a><a href="#instrumentos">Instrumentos</a><a href="#historia">Historia</a><a href="#ubicacion">Ubicación</a></div>
         </div>
-        <div class="footer-col">
-            <h4>Navegación</h4>
-            <a href="#inicio">Inicio</a>
-            <a href="#ar-camara">Experiencia AR</a>
-            <a href="#historia">Historia</a>
-            <a href="#ubicacion">Ubicación</a>
-        </div>
+        <div class="copyright">© 2026 - Todos los derechos reservados</div>
     </div>
-    <p class="copyright">© 2026 · Todos los derechos reservados · UPB Montería</p>
 </footer>
 
-<!-- ============================================================
-     SCRIPTS
-     Orden importante:
-     1. MindAR ya fue cargado en <head> (mindar-image-aframe.prod.js)
-     2. A-Frame ya fue iniciado por MindAR
-     3. Este bloque maneja la UI y los eventos de targets
-============================================================ -->
+<div id="modalHistoria" class="modal"><div class="modal-content"><span class="close-modal">&times;</span><div id="modalBody"></div></div></div>
+
 <script>
-/*
-=============================================================
-CONFIGURACIÓN DE INSTRUMENTOS
-Orden: debe coincidir EXACTAMENTE con el orden en que se
-compilaron los archivos en targets/all_targets.mind.
-Si usas archivos .mind individuales cambia a modo multi-file
-(ver comentario en activarAR()).
-=============================================================
-*/
-const INSTRUMENTOS = [
-    { id: 'platillos',     nombre: 'Platillos',     sonido: './sonidos/platillos.mp3'     },
-    { id: 'redoblante',    nombre: 'Redoblante',    sonido: './sonidos/redoblante.mp3'    },
-    { id: 'trompeta',      nombre: 'Trompeta',      sonido: './sonidos/trompeta.mp3'      },
-    { id: 'bombo',         nombre: 'Bombo',         sonido: './sonidos/bombo.mp3'         },
-    { id: 'clarinete',     nombre: 'Clarinete',     sonido: './sonidos/clarinete.mp3'     },
-    { id: 'trombon',       nombre: 'Trombón',       sonido: './sonidos/trombon.mp3'       },
-    { id: 'maria-varilla', nombre: 'María Varilla', sonido: './sonidos/maria_varilla.mp3' }
-];
+    // ========== DATOS INSTRUMENTOS (para la sección tradicional) ==========
+    const instrumentos = [
+        { nombre: "Platillos", modelo: "modelos/PLATILLOS.glb", sonido: "sonidos/platillos.mp3", img: "imagenes/platillos.jpg", descripcion: "Percusión metálica...", historia: "..." },
+        { nombre: "Redoblante", modelo: "modelos/REDOBLANTE.glb", sonido: "sonidos/redoblante.mp3", img: "imagenes/redoblantee.jpg", descripcion: "Tambor militar...", historia: "..." },
+        { nombre: "Trompeta", modelo: "modelos/TROMPETA.glb", sonido: "sonidos/trompeta.mp3", img: "imagenes/trompeta.jpg", descripcion: "Melodía brillante...", historia: "..." },
+        { nombre: "Bombo", modelo: "modelos/BOMBO.glb", sonido: "sonidos/bombo.mp3", img: "imagenes/bombo.jpg", descripcion: "Corazón rítmico...", historia: "..." },
+        { nombre: "Clarinete", modelo: "modelos/CLARINETE.glb", sonido: "sonidos/clarinete.mp3", img: "imagenes/clarineteee.jpg", descripcion: "Viento-madera...", historia: "..." },
+        { nombre: "Trombón", modelo: "modelos/TROMBON.glb", sonido: "sonidos/trombon.mp3", img: "imagenes/trombon2.jpg", descripcion: "Grave, potente...", historia: "..." },
+        { nombre: "María Varilla", modelo: "modelos/MARIA_VARILLA.glb", sonido: "sonidos/maria_varilla.mp3", img: "imagenes/maria_varilla.jpg", descripcion: "La bailarina...", historia: "..." }
+    ];
 
-/*
-=============================================================
-NOTA SOBRE LOS ARCHIVOS .mind
-=============================================================
-MindAR v1.2.5 admite un ÚNICO archivo .mind por escena.
-Para usar tus 7 archivos individuales tienes DOS opciones:
+    // ========== LOGICA AR CORREGIDA ==========
+    let currentSound = null;
+    let arActive = false;
+    const startBtn = document.getElementById('startARBtn');
+    const stopBtn = document.getElementById('stopARBtn');
+    const arScene = document.getElementById('arScene');
+    const placeholderDiv = document.getElementById('mindar-placeholder');
+    const loadingDiv = document.getElementById('mindar-loading');
+    const scanFrame = document.getElementById('scanFrame');
+    const hud = document.getElementById('mindar-hud');
+    const hintDiv = document.getElementById('mindar-hint');
+    const detectedCard = document.getElementById('detectedCard');
+    const detectedNameSpan = document.getElementById('detectedName');
 
-OPCIÓN A (recomendada, un solo archivo compilado):
-  - Usa el compilador de MindAR para unir los 7 .mind:
-    https://hiukim.github.io/mind-ar-js-doc/tools/compile
-  - El orden de compilación define el targetIndex (0-6).
-  - Guarda el resultado como: ./targets/all_targets.mind
-  - Esta es la configuración que ya está en el HTML.
+    function stopSound() {
+        if (currentSound) {
+            currentSound.pause();
+            currentSound.currentTime = 0;
+            currentSound = null;
+        }
+    }
 
-OPCIÓN B (7 escenas separadas, más complejo):
-  - Requiere 7 instancias de a-scene o iframes separados.
-  - No recomendado por rendimiento.
+    function showDetected(name) {
+        detectedNameSpan.textContent = name;
+        detectedCard.classList.add('visible');
+    }
+    function hideDetected() { detectedCard.classList.remove('visible'); }
 
-Con OPCIÓN A el flujo es:
-  imageTargetSrc: ./targets/all_targets.mind → carga los 7
-  mindar-image-target="targetIndex: N" → mapea cada target.
-=============================================================
-*/
-
-/* ─── Referencias DOM ─── */
-const btnActivar   = document.getElementById('btnActivar');
-const btnDetener   = document.getElementById('btnDetener');
-const placeholder  = document.getElementById('ar-placeholder');
-const loading      = document.getElementById('ar-loading');
-const sceneWrap    = document.getElementById('ar-scene-wrap');
-const scanFrame    = document.getElementById('scan-frame');
-const hud          = document.getElementById('ar-hud');
-const detectedPill = document.getElementById('detected-pill');
-const detectedName = document.getElementById('detectedName');
-const hint         = document.getElementById('ar-hint');
-const audioUnlock  = document.getElementById('audio-unlock');
-const btnUnlock    = document.getElementById('btn-unlock');
-
-let arScene       = null;   // referencia a <a-scene>
-let mindarSystem  = null;   // referencia al sistema de MindAR
-let audioActual   = null;   // objeto Audio activo
-let audioDesbloqueado = false; // flag: el usuario interactuó
-let arActivo      = false;
-
-/* ─── Cache de objetos Audio (evita recrgar en cada detección) ─── */
-const audioCache = {};
-INSTRUMENTOS.forEach(inst => {
-    const a = new Audio(inst.sonido);
-    a.loop    = true;
-    a.preload = 'none'; // solo descarga cuando se reproduce
-    audioCache[inst.id] = a;
-});
-
-/* ─── Funciones de audio ─── */
-function reproducir(id) {
-    detenerAudio(); // detener el anterior (si hubiera)
-    const a = audioCache[id];
-    if (!a) return;
-    a.currentTime = 0;
-    const prom = a.play();
-    if (prom && prom.catch) {
-        prom.catch(() => {
-            // El navegador bloqueó el autoplay
-            audioActual = a; // guardamos para reproducir tras desbloqueo
-            mostrarOverlayAudio();
+    function setupEvents() {
+        const targets = arScene.querySelectorAll('[mindar-image-target]');
+        const targetNames = ["Platillos","Redoblante","Trompeta","Bombo","Clarinete","Trombón","María Varilla"];
+        targets.forEach((target, idx) => {
+            target.addEventListener('targetFound', () => {
+                showDetected(targetNames[idx]);
+                const soundComp = target.querySelector('[sound]');
+                if (soundComp && soundComp.components && soundComp.components.sound) {
+                    soundComp.components.sound.playSound();
+                    currentSound = soundComp.components.sound;
+                }
+            });
+            target.addEventListener('targetLost', () => {
+                hideDetected();
+                stopSound();
+            });
         });
     }
-    audioActual = a;
-}
 
-function detenerAudio() {
-    if (audioActual) {
-        audioActual.pause();
-        audioActual.currentTime = 0;
-        audioActual = null;
+    async function startAR() {
+        if (arActive) return;
+        startBtn.disabled = true;
+        startBtn.innerHTML = '⏳ Iniciando...';
+        placeholderDiv.style.display = 'none';
+        loadingDiv.style.display = 'flex';
+        arScene.style.display = 'block';
+
+        const system = arScene.systems['mindar-image-system'];
+        if (!system) {
+            console.error('MindAR system not found');
+            loadingDiv.style.display = 'none';
+            placeholderDiv.style.display = 'flex';
+            placeholderDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Error: MindAR no cargó. Recarga la página.</p>';
+            startBtn.disabled = false;
+            startBtn.innerHTML = '📷 Activar Cámara AR';
+            return;
+        }
+        try {
+            await system.start();
+            arActive = true;
+            scanFrame.style.display = 'block';
+            hud.style.display = 'block';
+            hintDiv.style.display = 'block';
+            loadingDiv.style.display = 'none';
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            setupEvents();
+            // Forzar cámara trasera
+            const camera = arScene.querySelector('a-camera');
+            if (camera && camera.components && camera.components.camera) {
+                camera.components.camera.camera.userData = { facingMode: 'environment' };
+                camera.components.camera.update();
+            }
+        } catch (err) {
+            console.error(err);
+            loadingDiv.style.display = 'none';
+            placeholderDiv.style.display = 'flex';
+            placeholderDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>Error al iniciar AR. Verifica permisos y HTTPS.</p>';
+            startBtn.disabled = false;
+            startBtn.innerHTML = '📷 Activar Cámara AR';
+            arScene.style.display = 'none';
+        }
     }
-}
 
-function mostrarOverlayAudio() {
-    if (!audioDesbloqueado) {
-        audioUnlock.style.display = 'flex';
+    function stopAR() {
+        if (!arActive) return;
+        const system = arScene.systems['mindar-image-system'];
+        if (system) system.stop();
+        stopSound();
+        arActive = false;
+        scanFrame.style.display = 'none';
+        hud.style.display = 'none';
+        hintDiv.style.display = 'none';
+        arScene.style.display = 'none';
+        placeholderDiv.style.display = 'flex';
+        hideDetected();
+        startBtn.style.display = 'block';
+        stopBtn.style.display = 'none';
+        startBtn.disabled = false;
+        startBtn.innerHTML = '📷 Activar Cámara AR';
     }
-}
 
-/* Toque del usuario → desbloquea audio en iOS/Android */
-btnUnlock.addEventListener('click', () => {
-    audioDesbloqueado = true;
-    audioUnlock.style.display = 'none';
-    if (audioActual) audioActual.play().catch(() => {});
-});
+    startBtn.addEventListener('click', startAR);
+    stopBtn.addEventListener('click', stopAR);
 
-/* ─── Mostrar / ocultar nombre del instrumento detectado ─── */
-function mostrarDetectado(nombre) {
-    detectedName.textContent = nombre;
-    detectedPill.classList.add('show');
-}
-function ocultarDetectado() {
-    detectedPill.classList.remove('show');
-}
+    // Desbloquear audio en móviles (primer toque)
+    document.body.addEventListener('touchstart', () => {
+        const silent = new Audio();
+        silent.play().catch(()=>{});
+    }, { once: true });
 
-/* ─── Configurar eventos de targets (se llama una vez que la escena inicia) ─── */
-function configurarTargets() {
-    INSTRUMENTOS.forEach((inst, idx) => {
-        const entityId = `target-${inst.id}`;
-        const entity   = document.getElementById(entityId);
-        if (!entity) { console.warn(`No encontré #${entityId}`); return; }
-
-        entity.addEventListener('targetFound', () => {
-            mostrarDetectado(inst.nombre);
-            reproducir(inst.id);
+    // ========== FUNCIONES PARA LA SECCIÓN DE INSTRUMENTOS TRADICIONAL ==========
+    let tradAudio = null;
+    function playTradSound(url) {
+        if (tradAudio) { tradAudio.pause(); tradAudio.currentTime = 0; }
+        const a = new Audio(url);
+        a.play().catch(e=>console.log);
+        tradAudio = a;
+        a.onended = () => { if (tradAudio === a) tradAudio = null; };
+    }
+    function openModalRA(url, name) {
+        const ov = document.createElement('div');
+        ov.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:3000;display:flex;justify-content:center;align-items:center;flex-direction:column;padding:1rem;';
+        const p = document.createElement('p');
+        p.innerHTML = `<strong style="color:#C49A6C;">${name}</strong><br>Rota el modelo. Toca el cubo para AR.`;
+        p.style.cssText = 'color:white;margin-bottom:12px;font-family:Georgia;text-align:center;';
+        const mv = document.createElement('model-viewer');
+        mv.setAttribute('src', url); mv.setAttribute('alt', name); mv.setAttribute('ar', '');
+        mv.setAttribute('ar-modes', 'scene-viewer webxr quick-look'); mv.setAttribute('camera-controls', '');
+        mv.setAttribute('auto-rotate', ''); mv.setAttribute('environment-image', 'neutral');
+        mv.style.cssText = 'width:min(90vw,480px);height:min(60vh,480px);background:#111;border-radius:24px;';
+        const close = document.createElement('button');
+        close.innerHTML = '✕ Cerrar';
+        close.style.cssText = 'margin-top:16px;padding:12px 28px;background:#C49A6C;border:none;border-radius:40px;color:white;font-weight:bold;cursor:pointer;font-family:Georgia;';
+        close.onclick = () => document.body.removeChild(ov);
+        ov.appendChild(p); ov.appendChild(mv); ov.appendChild(close);
+        document.body.appendChild(ov);
+    }
+    function generarInstrumentos() {
+        const cont = document.getElementById('instrumentosGrid');
+        instrumentos.forEach(inst => {
+            const card = document.createElement('div'); card.className = 'card';
+            card.innerHTML = `<img class="card-img" src="${inst.img}" onerror="this.src='https://placehold.co/400x200'"><div class="card-content"><h3>${inst.nombre}</h3><p>${inst.descripcion}</p><div class="card-buttons"><button class="btn-sm btn" data-h="${inst.nombre}">Historia</button><button class="btn-sm btn-outline" data-s="${inst.sonido}">Sonido</button><button class="btn-sm btn" data-m="${inst.modelo}" data-n="${inst.nombre}">🌐 Ver RA</button></div></div>`;
+            cont.appendChild(card);
         });
-
-        entity.addEventListener('targetLost', () => {
-            ocultarDetectado();
-            detenerAudio();
-        });
-    });
-}
-
-/* ─── Activar AR ─── */
-async function activarAR() {
-    /* Verificar soporte */
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Tu navegador no soporta cámara.\nUsa HTTPS y Chrome (Android) o Safari (iOS).');
-        return;
+        document.querySelectorAll('[data-h]').forEach(b=>b.addEventListener('click',()=>mostrarModal(instrumentos.find(i=>i.nombre===b.dataset.h))));
+        document.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>playTradSound(b.dataset.s)));
+        document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>openModalRA(b.dataset.m, b.dataset.n)));
     }
-    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-        alert('Esta experiencia requiere HTTPS.\nPor favor sirve la página desde un servidor seguro.');
-        return;
-    }
-
-    /* Transición de UI */
-    btnActivar.disabled = true;
-    btnActivar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Iniciando…';
-    placeholder.style.opacity = '0';
-    setTimeout(() => { placeholder.style.display = 'none'; }, 400);
-    loading.style.display = 'flex';
-
-    /*
-    ─── Configurar imageTargetSrc ANTES de mostrar la escena ───
-    Apuntamos al archivo compilado que reúne los 7 targets.
-    Si compilaste con el compilador de MindAR, el archivo se
-    llama "all_targets.mind" y está en ./targets/
-    */
-    arScene = document.getElementById('arScene');
-    arScene.setAttribute(
-        'mindar-image',
-        'imageTargetSrc: ./targets/all_targets.mind; autoStart: false; uiLoading: no; uiScanning: no; uiError: no; filterMinCF: 0.001; filterBeta: 0.001; missTolerance: 5;'
-    );
-
-    /* Mostrar la escena A-Frame */
-    sceneWrap.style.display = 'block';
-
-    /* Esperar a que A-Frame inicialice la escena */
-    const esperarScene = () => new Promise(resolve => {
-        if (arScene.hasLoaded) { resolve(); return; }
-        arScene.addEventListener('loaded', resolve, { once: true });
-    });
-    await esperarScene();
-
-    /* Obtener el sistema MindAR e iniciar */
-    mindarSystem = arScene.systems['mindar-image-system'];
-    if (!mindarSystem) {
-        console.error('No se encontró mindar-image-system');
-        mostrarError('No se pudo iniciar el sistema AR.');
-        return;
-    }
-
-    try {
-        await mindarSystem.start();
-
-        /* AR en marcha ✓ */
-        arActivo = true;
-        loading.style.display = 'none';
-        scanFrame.style.display = 'block';
-        hud.style.display      = 'block';
-        hint.style.display     = 'block';
-        btnActivar.style.display = 'none';
-        btnDetener.style.display = 'flex';
-
-        configurarTargets();
-
-    } catch (err) {
-        console.error('Error al iniciar MindAR:', err);
-        mostrarError('No se pudo acceder a la cámara.<br>Verifica los permisos e inténtalo de nuevo.');
-    }
-}
-
-/* ─── Detener AR ─── */
-function detenerAR() {
-    if (mindarSystem && arActivo) {
-        mindarSystem.stop();
-        arActivo = false;
-    }
-    detenerAudio();
-    ocultarDetectado();
-
-    scanFrame.style.display = 'none';
-    hud.style.display       = 'none';
-    hint.style.display      = 'none';
-    sceneWrap.style.display = 'none';
-
-    placeholder.style.display  = 'flex';
-    placeholder.style.opacity  = '1';
-    placeholder.innerHTML = `
-        <div class="icon-ring"><i class="fas fa-camera-retro"></i></div>
-        <p>Activa la cámara para comenzar<br>la experiencia AR</p>`;
-
-    btnActivar.disabled = false;
-    btnActivar.innerHTML = '<i class="fas fa-camera"></i> Activar Cámara AR';
-    btnActivar.style.display = 'flex';
-    btnDetener.style.display = 'none';
-}
-
-/* ─── Mostrar error en el visor ─── */
-function mostrarError(mensaje) {
-    loading.style.display = 'none';
-    sceneWrap.style.display = 'none';
-    placeholder.style.display = 'flex';
-    placeholder.style.opacity = '1';
-    placeholder.innerHTML = `
-        <div class="icon-ring" style="border-color:rgba(255,100,80,.4);">
-            <i class="fas fa-exclamation-triangle" style="color:rgba(255,120,80,.6);"></i>
-        </div>
-        <p style="color:rgba(255,150,120,.7);">${mensaje}</p>`;
-    btnActivar.disabled = false;
-    btnActivar.innerHTML = '<i class="fas fa-camera"></i> Activar Cámara AR';
-    btnActivar.style.display = 'flex';
-    btnDetener.style.display = 'none';
-}
-
-/* ─── Event listeners de botones ─── */
-btnActivar.addEventListener('click', activarAR);
-btnDetener.addEventListener('click', detenerAR);
-
-/* ─── Navbar: sombra al hacer scroll ─── */
-const mainNav = document.getElementById('mainNav');
-window.addEventListener('scroll', () => {
-    mainNav.classList.toggle('scrolled', window.scrollY > 10);
-});
-
-/* ─── Hamburger móvil ─── */
-const hamburger = document.getElementById('hamburger');
-const navLinks  = document.getElementById('navLinks');
-hamburger.addEventListener('click', () => {
-    const open = navLinks.style.display === 'flex';
-    navLinks.style.display = open ? '' : 'flex';
-    navLinks.style.flexDirection = 'column';
-    navLinks.style.position  = 'absolute';
-    navLinks.style.top       = '56px';
-    navLinks.style.left      = '0';
-    navLinks.style.right     = '0';
-    navLinks.style.background = 'rgba(255,249,240,.97)';
-    navLinks.style.padding   = '1rem 2rem';
-    navLinks.style.gap       = '1rem';
-    navLinks.style.borderBottom = '1px solid rgba(196,154,108,.15)';
-});
-
-/* Cerrar menú al hacer clic en un enlace */
-document.querySelectorAll('.nav-links a').forEach(a => {
-    a.addEventListener('click', () => {
-        navLinks.style.display = '';
-    });
-});
+    const modalHist = document.getElementById('modalHistoria');
+    const modalBody = document.getElementById('modalBody');
+    function mostrarModal(inst) { modalBody.innerHTML = `<h3>${inst.nombre}</h3><p>${inst.historia}</p>`; modalHist.style.display = 'flex'; }
+    document.querySelector('.close-modal').addEventListener('click',()=>modalHist.style.display='none');
+    window.addEventListener('click',e=>{if(e.target===modalHist) modalHist.style.display='none';});
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    menuToggle.addEventListener('click',()=>navLinks.classList.toggle('active'));
+    document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',function(e){
+        const id = this.getAttribute('href');
+        if(id==='#') return;
+        const t = document.querySelector(id);
+        if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); navLinks.classList.remove('active'); }
+    }));
+    document.addEventListener('DOMContentLoaded',()=>{ generarInstrumentos(); });
 </script>
-
-<!--
-=======================================================
-INSTRUCCIONES DE DESPLIEGUE
-=======================================================
-1. ESTRUCTURA DE CARPETAS necesaria junto a index.html:
-   /targets/
-       all_targets.mind     ← archivo compilado con los 7 .mind
-                              (genera con https://hiukim.github.io/mind-ar-js-doc/tools/compile
-                               en este orden: platillos, redoblante, trompeta, bombo,
-                               clarinete, trombon, maria_varilla)
-   /modelos/
-       PLATILLOS.glb
-       REDOBLANTE.glb
-       TROMPETA.glb
-       BOMBO.glb
-       CLARINETE.glb
-       TROMBON.glb
-       MARIA_VARILLA.glb
-   /sonidos/
-       platillos.mp3
-       redoblante.mp3
-       trompeta.mp3
-       bombo.mp3
-       clarinete.mp3
-       trombon.mp3
-       maria_varilla.mp3
-   /imagenes/
-       bombo_maria.jpg     ← foto para el hero
-
-2. SERVIDOR HTTPS obligatorio. Opciones gratuitas:
-   - GitHub Pages (gratis, HTTPS automático)
-   - Netlify Drop: arrastra tu carpeta en https://app.netlify.com/drop
-   - Vercel: `npx vercel` en la carpeta del proyecto
-   - Para pruebas locales: `npx serve .` y usa ngrok para el túnel HTTPS
-
-3. COMPILAR los .mind en uno solo:
-   Ve a https://hiukim.github.io/mind-ar-js-doc/tools/compile
-   Sube las imágenes de entrenamiento en el orden indicado arriba.
-   Descarga el .mind resultante y nómbralo all_targets.mind
-
-4. PRUEBA en Chrome (Android) o Safari (iOS) — estos son los
-   navegadores con mejor soporte para WebXR y getUserMedia.
-=======================================================
--->
-
 </body>
 </html>
