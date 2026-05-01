@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Monumento al Porro | AR con MindAR</title>
+    <title>Monumento al Porro | Realidad Aumentada</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Georgia, serif;
-        }
+        body { margin: 0; overflow: hidden; font-family: Georgia, serif; }
         #controls {
             position: fixed;
             bottom: 20px;
@@ -18,22 +14,23 @@
             text-align: center;
             z-index: 100;
             background: rgba(0,0,0,0.7);
-            padding: 10px;
+            padding: 12px;
             backdrop-filter: blur(8px);
             border-top: 1px solid #C49A6C;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
         }
         button {
             background: #C49A6C;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 40px;
             color: white;
             font-weight: bold;
             font-family: Georgia, serif;
             font-size: 1rem;
             cursor: pointer;
-            margin: 0 8px;
-            transition: transform 0.2s;
         }
         button:active { transform: scale(0.96); }
         .status {
@@ -65,13 +62,13 @@
             display: none;
             white-space: nowrap;
             font-family: Georgia, serif;
+            pointer-events: none;
         }
         @media (max-width: 600px) {
             .detected-badge { font-size: 0.8rem; bottom: 90px; white-space: normal; width: 80%; text-align: center; }
             button { padding: 8px 16px; font-size: 0.8rem; }
         }
     </style>
-    <!-- MindAR A-Frame -->
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 </head>
 <body>
@@ -82,152 +79,172 @@
         <button id="stopBtn" style="display:none;">🛑 Detener</button>
     </div>
 
-    <!-- Escena A-Frame que se llenará dinámicamente -->
-    <div id="arContainer" style="position: absolute; inset: 0; z-index: 1;"></div>
+    <!-- Escena A-Frame con todos los targets estáticos -->
+    <a-scene id="arScene"
+        mindar-image="imageTargetSrc: null; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;"
+        embedded
+        vr-mode-ui="enabled: false"
+        renderer="antialias: true"
+        style="position: absolute; inset: 0; z-index: 1; display: none;">
+        
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <!-- PLATILLOS -->
+        <a-entity mindar-image-target="imageTargetSrc: ./targets/platillos.mind;">
+            <a-entity gltf-model="./modelos/PLATILLOS.glb" scale="0.5 0.5 0.5" position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/platillos.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
+        </a-entity>
+
+        <!-- REDOBLANTE -->
+        <a-entity mindar-image-target="imageTargetSrc: ./targets/redoblante.mind;">
+            <a-entity gltf-model="./modelos/REDOBLANTE.glb" scale="0.5 0.5 0.5" position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 18000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/redoblante.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
+        </a-entity>
+
+        <!-- TROMPETA -->
+        <a-entity mindar-image-target="imageTargetSrc: ./targets/trompeta.mind;">
+            <a-entity gltf-model="./modelos/TROMPETA.glb" scale="0.5 0.5 0.5" position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/trompeta.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
+        </a-entity>
+
+        <!-- BOMBO -->
+        <a-entity mindar-image-target="imageTargetSrc: ./targets/bombo.mind;">
+            <a-entity gltf-model="./modelos/BOMBO.glb" scale="0.5 0.5 0.5" position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 22000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/bombo.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
+        </a-entity>
+
+        <!-- CLARINETE -->
+        <a-entity mindar-image-target="imageTargetSrc: ./targets/clarinete.mind;">
+            <a-entity gltf-model="./modelos/CLARINETE.glb" scale="0.5 0.5 0.5" position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 16000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/clarinete.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
+        </a-entity>
+
+        <!-- TROMBÓN -->
+        <a-entity mindar-image-target="imageTargetSrc: ./targets/trombon.mind;">
+            <a-entity gltf-model="./modelos/TROMBON.glb" scale="0.5 0.5 0.5" position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 19000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/trombon.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
+        </a-entity>
+
+        <!-- MARÍA VARILLA -->
+        <a-entity mindar-image-target="imageTargetSrc: ./targets/maria_varilla.mind;">
+            <a-entity gltf-model="./modelos/MARIA_VARILLA.glb" scale="0.5 0.5 0.5" position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/maria_varilla.mp3; autoplay: false; loop: true; volume: 0.8;"></a-entity>
+        </a-entity>
+    </a-scene>
 
     <script>
-        // ========== DATOS DE TARGETS INDIVIDUALES ==========
-        const targets = [
-            { id: "platillos",   targetFile: "targets/platillos.mind",   modelFile: "modelos/PLATILLOS.glb",   soundFile: "sonidos/platillos.mp3",   name: "Platillos" },
-            { id: "redoblante",  targetFile: "targets/redoblante.mind",  modelFile: "modelos/REDOBLANTE.glb",  soundFile: "sonidos/redoblante.mp3",  name: "Redoblante" },
-            { id: "trompeta",    targetFile: "targets/trompeta.mind",    modelFile: "modelos/TROMPETA.glb",    soundFile: "sonidos/trompeta.mp3",    name: "Trompeta" },
-            { id: "bombo",       targetFile: "targets/bombo.mind",       modelFile: "modelos/BOMBO.glb",       soundFile: "sonidos/bombo.mp3",       name: "Bombo" },
-            { id: "clarinete",   targetFile: "targets/clarinete.mind",   modelFile: "modelos/CLARINETE.glb",   soundFile: "sonidos/clarinete.mp3",   name: "Clarinete" },
-            { id: "trombon",     targetFile: "targets/trombon.mind",     modelFile: "modelos/TROMBON.glb",     soundFile: "sonidos/trombon.mp3",     name: "Trombón" },
-            { id: "maria_varilla", targetFile: "targets/maria_varilla.mind", modelFile: "modelos/MARIA_VARILLA.glb", soundFile: "sonidos/maria_varilla.mp3", name: "María Varilla" }
-        ];
-
-        let currentAudio = null;
-        let currentScene = null;
+        // Variables globales
         let mindarSystem = null;
         let arActive = false;
+        let currentSound = null;
 
         const statusDiv = document.getElementById('status');
         const detectedBadge = document.getElementById('detectedBadge');
         const detectedNameSpan = document.getElementById('detectedName');
         const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
-        const arContainer = document.getElementById('arContainer');
+        const arScene = document.getElementById('arScene');
 
-        function stopSound() {
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio.currentTime = 0;
-                currentAudio = null;
-            }
-        }
-
-        function showDetected(name) {
-            detectedNameSpan.textContent = name;
-            detectedBadge.style.display = 'block';
-            setTimeout(() => {
-                if (detectedNameSpan.textContent === name) {
-                    // se oculta 1 segundo después de perder detección? mejor manejarlo con targetLost
-                }
-            }, 500);
-        }
-        function hideDetected() {
-            detectedBadge.style.display = 'none';
-            stopSound();
+        // Función para mostrar detección (usando eventos)
+        function setupDetectionEvents() {
+            const targets = arScene.querySelectorAll('[mindar-image-target]');
+            const targetNames = [
+                "Platillos", "Redoblante", "Trompeta", "Bombo",
+                "Clarinete", "Trombón", "María Varilla"
+            ];
+            targets.forEach((target, idx) => {
+                target.addEventListener('targetFound', () => {
+                    detectedNameSpan.textContent = targetNames[idx];
+                    detectedBadge.style.display = 'block';
+                    // Reproducir sonido (detener anterior)
+                    const soundComp = target.querySelector('[sound]');
+                    if (soundComp && soundComp.components && soundComp.components.sound) {
+                        if (currentSound && currentSound !== soundComp.components.sound) {
+                            currentSound.stopSound();
+                        }
+                        soundComp.components.sound.playSound();
+                        currentSound = soundComp.components.sound;
+                    }
+                });
+                target.addEventListener('targetLost', () => {
+                    detectedBadge.style.display = 'none';
+                    if (currentSound) {
+                        currentSound.stopSound();
+                        currentSound = null;
+                    }
+                });
+            });
         }
 
         async function startAR() {
             if (arActive) return;
-            statusDiv.innerHTML = '🔍 Solicitando permiso de cámara...';
+            statusDiv.innerHTML = '🔍 Solicitando cámara...';
             startBtn.disabled = true;
             startBtn.textContent = '⏳ Iniciando...';
 
-            // Limpiar contenedor
-            arContainer.innerHTML = '';
-
-            // Crear escena A-Frame
-            const scene = document.createElement('a-scene');
-            scene.setAttribute('mindar-image', 'imageTargetSrc: null; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;');
-            scene.setAttribute('embedded', '');
-            scene.setAttribute('vr-mode-ui', 'enabled: false');
-            scene.style.cssText = 'width:100%; height:100%; position:absolute; top:0; left:0;';
-
-            // Cámara
-            const camera = document.createElement('a-camera');
-            camera.setAttribute('look-controls', 'enabled: false');
-            scene.appendChild(camera);
-
-            // Agregar cada target
-            targets.forEach(t => {
-                const targetEntity = document.createElement('a-entity');
-                targetEntity.setAttribute('mindar-image-target', `imageTargetSrc: ${t.targetFile}`);
-                // Modelo 3D
-                const model = document.createElement('a-entity');
-                model.setAttribute('gltf-model', t.modelFile);
-                model.setAttribute('scale', '0.5 0.5 0.5');
-                model.setAttribute('position', '0 0 0');
-                model.setAttribute('visible', 'true');
-                // Quitamos las animaciones para ahorrar recursos
-                targetEntity.appendChild(model);
-                
-                // Sonido: se manejará con eventos
-                let soundPlaying = false;
-                targetEntity.addEventListener('targetFound', () => {
-                    if (soundPlaying) return;
-                    soundPlaying = true;
-                    showDetected(t.name);
-                    if (currentAudio) currentAudio.pause();
-                    const audio = new Audio(t.soundFile);
-                    audio.loop = true;
-                    audio.play().catch(e => console.warn('Autoplay bloqueado, toca la pantalla'));
-                    currentAudio = audio;
-                    audio.onended = () => { soundPlaying = false; };
-                });
-                targetEntity.addEventListener('targetLost', () => {
-                    soundPlaying = false;
-                    hideDetected();
-                });
-                scene.appendChild(targetEntity);
-            });
-
-            arContainer.appendChild(scene);
-            currentScene = scene;
-
-            // Esperar a que la escena esté cargada
-            scene.addEventListener('loaded', async () => {
-                mindarSystem = scene.systems['mindar-image-system'];
-                if (!mindarSystem) {
-                    statusDiv.innerHTML = '❌ Error: MindAR no inicializado. Verifica la consola.';
-                    console.error('MindAR system not found');
-                    return;
+            // Mostrar escena
+            arScene.style.display = 'block';
+            
+            // Forzar un pequeño delay para asegurar que el DOM esté listo
+            await new Promise(r => setTimeout(r, 100));
+            
+            // Obtener el sistema de MindAR
+            mindarSystem = arScene.systems['mindar-image-system'];
+            if (!mindarSystem) {
+                statusDiv.innerHTML = '❌ Error: MindAR no inicializado. Recarga la página.';
+                console.error('MindAR system missing');
+                arScene.style.display = 'none';
+                startBtn.disabled = false;
+                startBtn.textContent = '📷 Activar Cámara AR';
+                return;
+            }
+            
+            try {
+                await mindarSystem.start();
+                // Forzar cámara trasera
+                const camera = arScene.querySelector('a-camera');
+                if (camera && camera.components && camera.components.camera) {
+                    const cam = camera.components.camera.camera;
+                    if (cam) cam.userData = { facingMode: 'environment' };
                 }
-                try {
-                    await mindarSystem.start();
-                    statusDiv.innerHTML = '✅ AR activa - Apunta a una estatua';
-                    arActive = true;
-                    startBtn.style.display = 'none';
-                    stopBtn.style.display = 'inline-block';
-                    // Forzar cámara trasera
-                    const cam = scene.querySelector('a-camera');
-                    if (cam && cam.components.camera) {
-                        cam.components.camera.camera.userData = { facingMode: 'environment' };
-                        // Reiniciar para aplicar
-                        cam.components.camera.update();
-                    }
-                } catch (err) {
-                    console.error(err);
-                    statusDiv.innerHTML = '⚠️ Error al iniciar AR: ' + err.message;
-                    startBtn.disabled = false;
-                    startBtn.textContent = '📷 Activar Cámara AR';
-                }
-            });
+                statusDiv.innerHTML = '✅ AR activa - Apunta a una estatua';
+                arActive = true;
+                startBtn.style.display = 'none';
+                stopBtn.style.display = 'inline-block';
+                setupDetectionEvents();
+            } catch (err) {
+                console.error(err);
+                statusDiv.innerHTML = '⚠️ No se pudo iniciar AR. Verifica permisos y HTTPS.';
+                arScene.style.display = 'none';
+                startBtn.disabled = false;
+                startBtn.textContent = '📷 Activar Cámara AR';
+            }
         }
 
         function stopAR() {
             if (!arActive) return;
             if (mindarSystem) mindarSystem.stop();
-            if (currentScene) {
-                arContainer.removeChild(currentScene);
-                currentScene = null;
-            }
-            stopSound();
-            hideDetected();
+            arScene.style.display = 'none';
             arActive = false;
+            detectedBadge.style.display = 'none';
+            if (currentSound) {
+                currentSound.stopSound();
+                currentSound = null;
+            }
             statusDiv.innerHTML = '⚙️ Detenido';
             startBtn.disabled = false;
             startBtn.textContent = '📷 Activar Cámara AR';
@@ -238,9 +255,10 @@
         startBtn.addEventListener('click', startAR);
         stopBtn.addEventListener('click', stopAR);
 
-        // Ayuda para desbloquear audio en dispositivos móviles
+        // Desbloquear audio en móviles: primer toque reproduce silencio para habilitar autoplay
         document.body.addEventListener('touchstart', () => {
-            if (currentAudio && currentAudio.paused) currentAudio.play().catch(e=>{});
+            const silent = new Audio();
+            silent.play().catch(()=>{});
         }, { once: true });
     </script>
 </body>
