@@ -331,9 +331,18 @@
                 <div class="ra-text">
                     <span class="badge-ra">¡RA activa! Escanea el QR</span>
                     <div class="ra-steps">
-                        <div class="step"><div class="step-number">1</div><div class="step-text"><strong>Escanea el código QR</strong> (el que ves a la derecha) con la cámara de tu celular.</div></div>
-                        <div class="step"><div class="step-number">2</div><div class="step-text"><strong>Se abrirá esta misma página.</strong> Elige cualquier instrumento y presiona <strong>"Ver en RA"</strong>.</div></div>
-                        <div class="step"><div class="step-number">3</div><div class="step-text"><strong>Apunta tu cámara al suelo o a una superficie plana</strong> y el modelo 3D aparecerá. Puedes moverlo, agrandarlo y escuchar su sonido original.</div></div>
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-text"><strong>Escanea el código QR</strong> desde la sección de instrumentos con la cámara de tu celular.</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-text"><strong>Se abrirá la página AR del instrumento.</strong> Cada QR lleva a una experiencia distinta para ver el modelo 3D correspondiente.</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-text"><strong>Apunta tu cámara al monumento o a la superficie indicada</strong> y el modelo 3D aparecerá. Puedes moverlo, agrandarlo y escuchar su sonido original.</div>
+                        </div>
                     </div>
                     <p><i class="fas fa-mobile-alt"></i> Compatible con iOS (AR Quick Look) y Android (AR Core). No necesitas apps adicionales.</p>
                 </div>
@@ -351,7 +360,7 @@
     <section id="instrumentos" class="full-screen bg-alt">
         <div class="container">
             <h2>Los instrumentos del porro sinuano</h2>
-            <p class="section-sub">Toca "Ver en RA" para proyectar el modelo 3D en tu entorno</p>
+            <p class="section-sub">Toca "Ver QR" para abrir el código y acceder a la experiencia AR de cada instrumento</p>
             <div class="grid-instrumentos" id="instrumentosGrid"></div>
         </div>
     </section>
@@ -461,63 +470,198 @@
 
     // Arreglo de instrumentos con rutas CORREGIDAS según tus archivos
     const instrumentos = [
-        { nombre: "Platillos", modelo: "modelos/PLATILLOS.glb", sonido: "sonidos/platillos.mp3", descripcion: "Percusión metálica que marca los acentos rítmicos.", img: "imagenes/platillos.jpg", historia: "Los platillos llegaron al porro desde las bandas militares europeas, pero los músicos costeños los adaptaron con un toque sincopado. Su sonido brillante y cortante resalta los momentos más intensos de la melodía." },
-        { nombre: "Redoblante", modelo: "modelos/REDOBLANTE.glb", sonido: "sonidos/redoblante.mp3", descripcion: "Tambor militar que aporta el ritmo sincopado.", img: "imagenes/redoblantee.jpg", historia: "El redoblante, también llamado caja, es el esqueleto rítmico del porro. Su técnica proviene de los tambores africanos fusionados con las marchas europeas." },
-        { nombre: "Trompeta", modelo: "modelos/TROMPETA.glb", sonido: "sonidos/trompeta.mp3", descripcion: "Melodía brillante, voz principal del porro.", img: "imagenes/trompeta.jpg", historia: "La trompeta es la gran solista del porro. Su timbre agudo y penetrante lleva la melodía y las improvisaciones." },
-        { nombre: "Bombo", modelo: "modelos/BOMBO.glb", sonido: "sonidos/bombo.mp3", descripcion: "Corazón rítmico, compás de 2/4.", img: "imagenes/bombo.jpg", historia: "El bombo es la base del porro. Su golpe grave y profundo marca el paso de la danza." },
-        { nombre: "Clarinete", modelo: "modelos/CLARINETE.glb", sonido: "sonidos/clarinete.mp3", descripcion: "Viento-madera que da calidez y adornos.", img: "imagenes/clarineteee.jpg", historia: "El clarinete añade la voz melancólica y juguetona al porro. Sus fraseos dialogan con la trompeta." },
-        { nombre: "Trombón", modelo: "modelos/TROMBON.glb", sonido: "sonidos/trombon.mp3", descripcion: "Grave, potente, soporte armónico.", img: "imagenes/trombon2.jpg", historia: "El trombón de varas aporta la base armónica y un carácter grave y brillante a la vez." },
-        { nombre: "María Varilla", modelo: "modelos/MARIA_VARILLA.glb", sonido: "sonidos/maria_varilla.mp3", descripcion: "La bailarina eterna, musa del monumento.", img: "imagenes/maria_varilla.jpg", historia: "María Varilla representa a todas las mujeres que han danzado porro en las plazas. Su escultura invita a celebrar el patrimonio con alegría." }
+        {
+            nombre: "Platillos",
+            modelo: "modelos/PLATILLOS.glb",
+            sonido: "sonidos/platillos.mp3",
+            descripcion: "Percusión metálica que marca los acentos rítmicos.",
+            img: "imagenes/platillos.jpg",
+            historia: "Los platillos llegaron al porro desde las bandas militares europeas, pero los músicos costeños los adaptaron con un toque sincopado. Su sonido brillante y cortante resalta los momentos más intensos de la melodía.",
+            arUrl: "ra/platillos.html"
+        },
+        {
+            nombre: "Redoblante",
+            modelo: "modelos/REDOBLANTE.glb",
+            sonido: "sonidos/redoblante.mp3",
+            descripcion: "Tambor militar que aporta el ritmo sincopado.",
+            img: "imagenes/redoblantee.jpg",
+            historia: "El redoblante, también llamado caja, es el esqueleto rítmico del porro. Su técnica proviene de los tambores africanos fusionados con las marchas europeas.",
+            arUrl: "ra/redoblante.html"
+        },
+        {
+            nombre: "Trompeta",
+            modelo: "modelos/TROMPETA.glb",
+            sonido: "sonidos/trompeta.mp3",
+            descripcion: "Melodía brillante, voz principal del porro.",
+            img: "imagenes/trompeta.jpg",
+            historia: "La trompeta es la gran solista del porro. Su timbre agudo y penetrante lleva la melodía y las improvisaciones.",
+            arUrl: "ra/trompeta.html"
+        },
+        {
+            nombre: "Bombo",
+            modelo: "modelos/BOMBO.glb",
+            sonido: "sonidos/bombo.mp3",
+            descripcion: "Corazón rítmico, compás de 2/4.",
+            img: "imagenes/bombo.jpg",
+            historia: "El bombo es la base del porro. Su golpe grave y profundo marca el paso de la danza.",
+            arUrl: "ra/bombo.html"
+        },
+        {
+            nombre: "Clarinete",
+            modelo: "modelos/CLARINETE.glb",
+            sonido: "sonidos/clarinete.mp3",
+            descripcion: "Viento-madera que da calidez y adornos.",
+            img: "imagenes/clarineteee.jpg",
+            historia: "El clarinete añade la voz melancólica y juguetona al porro. Sus fraseos dialogan con la trompeta.",
+            arUrl: "ra/clarinete.html"
+        },
+        {
+            nombre: "Trombón",
+            modelo: "modelos/TROMBON.glb",
+            sonido: "sonidos/trombon.mp3",
+            descripcion: "Grave, potente, soporte armónico.",
+            img: "imagenes/trombon2.jpg",
+            historia: "El trombón de varas aporta la base armónica y un carácter grave y brillante a la vez.",
+            arUrl: "ra/trombon.html"
+        },
+        {
+            nombre: "María Varilla",
+            modelo: "modelos/MARIA_VARILLA.glb",
+            sonido: "sonidos/maria_varilla.mp3",
+            descripcion: "La bailarina eterna, musa del monumento.",
+            img: "imagenes/maria_varilla.jpg",
+            historia: "María Varilla representa a todas las mujeres que han danzado porro en las plazas. Su escultura invita a celebrar el patrimonio con alegría.",
+            arUrl: "ra/maria_varilla.html"
+        }
     ];
 
     function generarQR() {
         const qrDiv = document.getElementById('qr-code');
         if (qrDiv && typeof QRCode !== 'undefined') {
             qrDiv.innerHTML = "";
-            new QRCode(qrDiv, { text: window.location.href, width: 128, height: 128, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+            new QRCode(qrDiv, {
+                text: window.location.href,
+                width: 128,
+                height: 128,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
         }
     }
 
     function reproducirSonido(url) {
         if (!url) return;
-        if (audioActual) { audioActual.pause(); audioActual.currentTime = 0; }
+        if (audioActual) {
+            audioActual.pause();
+            audioActual.currentTime = 0;
+        }
         const nuevoAudio = new Audio(url);
         nuevoAudio.play().catch(err => console.warn("Error al reproducir sonido:", err));
         audioActual = nuevoAudio;
-        nuevoAudio.onended = () => { if (audioActual === nuevoAudio) audioActual = null; };
+        nuevoAudio.onended = () => {
+            if (audioActual === nuevoAudio) audioActual = null;
+        };
     }
 
-    function abrirRA(modeloURL, nombreInstrumento) {
-        const modalAR = document.createElement('div');
-        modalAR.style.position = 'fixed'; modalAR.style.top = '0'; modalAR.style.left = '0';
-        modalAR.style.width = '100%'; modalAR.style.height = '100%'; modalAR.style.backgroundColor = 'rgba(0,0,0,0.9)';
-        modalAR.style.zIndex = '3000'; modalAR.style.display = 'flex'; modalAR.style.justifyContent = 'center';
-        modalAR.style.alignItems = 'center'; modalAR.style.flexDirection = 'column';
+    function mostrarQR(url, nombreInstrumento) {
+        const modalQR = document.createElement('div');
+        modalQR.style.position = 'fixed';
+        modalQR.style.top = '0';
+        modalQR.style.left = '0';
+        modalQR.style.width = '100%';
+        modalQR.style.height = '100%';
+        modalQR.style.backgroundColor = 'rgba(0,0,0,0.8)';
+        modalQR.style.zIndex = '3000';
+        modalQR.style.display = 'flex';
+        modalQR.style.justifyContent = 'center';
+        modalQR.style.alignItems = 'center';
+        modalQR.style.padding = '20px';
 
-        const mv = document.createElement('model-viewer');
-        mv.setAttribute('src', modeloURL); mv.setAttribute('alt', nombreInstrumento); mv.setAttribute('ar', '');
-        mv.setAttribute('ar-modes', 'scene-viewer webxr quick-look'); mv.setAttribute('camera-controls', '');
-        mv.setAttribute('environment-image', 'neutral'); mv.setAttribute('style', 'width: 90%; height: 70%; background-color: #111; border-radius: 24px;');
-        mv.setAttribute('ios-src', modeloURL);
+        const box = document.createElement('div');
+        box.style.background = 'white';
+        box.style.borderRadius = '28px';
+        box.style.padding = '24px';
+        box.style.maxWidth = '420px';
+        box.style.width = '100%';
+        box.style.textAlign = 'center';
+        box.style.position = 'relative';
+        box.style.boxShadow = '0 20px 50px rgba(0,0,0,0.3)';
 
         const closeBtn = document.createElement('button');
-        closeBtn.innerText = 'Cerrar'; closeBtn.style.marginTop = '20px'; closeBtn.style.padding = '12px 24px';
-        closeBtn.style.backgroundColor = '#C49A6C'; closeBtn.style.border = 'none'; closeBtn.style.borderRadius = '40px';
-        closeBtn.style.color = 'white'; closeBtn.style.fontWeight = 'bold'; closeBtn.style.cursor = 'pointer';
-        closeBtn.onclick = () => document.body.removeChild(modalAR);
+        closeBtn.innerHTML = '&times;';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '12px';
+        closeBtn.style.right = '16px';
+        closeBtn.style.border = 'none';
+        closeBtn.style.background = 'transparent';
+        closeBtn.style.fontSize = '2rem';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.color = '#C49A6C';
+        closeBtn.onclick = () => document.body.removeChild(modalQR);
 
-        const instr = document.createElement('p');
-        instr.innerText = 'Toca el modelo y luego "Ver en Realidad Aumentada" para proyectarlo en tu entorno.';
-        instr.style.color = 'white'; instr.style.marginBottom = '16px'; instr.style.fontFamily = 'Georgia';
+        const title = document.createElement('h3');
+        title.innerText = nombreInstrumento;
+        title.style.marginBottom = '12px';
+        title.style.color = '#2C3E2F';
 
-        modalAR.appendChild(instr); modalAR.appendChild(mv); modalAR.appendChild(closeBtn);
-        document.body.appendChild(modalAR);
+        const subtitle = document.createElement('p');
+        subtitle.innerText = 'Escanea este QR para abrir la experiencia de realidad aumentada de este instrumento.';
+        subtitle.style.marginBottom = '18px';
+        subtitle.style.color = '#5C5C5C';
+
+        const qrDiv = document.createElement('div');
+        qrDiv.style.display = 'flex';
+        qrDiv.style.justifyContent = 'center';
+        qrDiv.style.margin = '0 auto 18px auto';
+
+        const linkFinal = new URL(url, window.location.href).href;
+
+        new QRCode(qrDiv, {
+            text: linkFinal,
+            width: 220,
+            height: 220,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        const linkText = document.createElement('small');
+        linkText.innerText = linkFinal;
+        linkText.style.display = 'block';
+        linkText.style.wordBreak = 'break-all';
+        linkText.style.color = '#5C5C5C';
+        linkText.style.marginBottom = '18px';
+
+        const closeBtn2 = document.createElement('button');
+        closeBtn2.innerText = 'Cerrar';
+        closeBtn2.className = 'btn';
+        closeBtn2.style.marginTop = '4px';
+        closeBtn2.onclick = () => document.body.removeChild(modalQR);
+
+        box.appendChild(closeBtn);
+        box.appendChild(title);
+        box.appendChild(subtitle);
+        box.appendChild(qrDiv);
+        box.appendChild(linkText);
+        box.appendChild(closeBtn2);
+
+        modalQR.appendChild(box);
+
+        modalQR.addEventListener('click', (e) => {
+            if (e.target === modalQR) {
+                document.body.removeChild(modalQR);
+            }
+        });
+
+        document.body.appendChild(modalQR);
     }
 
     function generarInstrumentos() {
         const contenedor = document.getElementById('instrumentosGrid');
         if (!contenedor) return;
         contenedor.innerHTML = '';
+
         instrumentos.forEach(inst => {
             const card = document.createElement('div');
             card.className = 'card';
@@ -529,7 +673,7 @@
                     <div class="card-buttons">
                         <button class="btn-sm btn" data-historia="${inst.nombre}">Ver historia</button>
                         <button class="btn-sm btn-outline btn-sonido" data-sonido="${inst.sonido}">Escuchar sonido</button>
-                        <button class="btn-sm btn ar-activate" data-modelo="${inst.modelo}" data-nombre="${inst.nombre}">🌐 Ver en RA</button>
+                        <button class="btn-sm btn ar-qr" data-url="${inst.arUrl}" data-nombre="${inst.nombre}">📱 Ver QR</button>
                     </div>
                 </div>
             `;
@@ -543,6 +687,7 @@
                 if (instrumento) mostrarModal(instrumento);
             });
         });
+
         document.querySelectorAll('.btn-sonido').forEach(btn => {
             btn.addEventListener('click', () => {
                 const sonidoURL = btn.getAttribute('data-sonido');
@@ -550,22 +695,25 @@
                 else alert("Sonido no disponible.");
             });
         });
-        document.querySelectorAll('.ar-activate').forEach(btn => {
+
+        document.querySelectorAll('.ar-qr').forEach(btn => {
             btn.addEventListener('click', () => {
-                const modeloURL = btn.getAttribute('data-modelo');
-                const nombre = btn.getAttribute('data-nombre');
-                if (modeloURL) abrirRA(modeloURL, nombre);
-                else alert("Modelo 3D no encontrado.");
+                const url = btn.getAttribute('data-url');
+                const nombre = btn.getAttribute('data-nombre') || 'Realidad Aumentada';
+                if (url) mostrarQR(url, nombre);
+                else alert("URL de RA no encontrada.");
             });
         });
     }
 
     const modalHistoria = document.getElementById('modalHistoria');
     const modalBody = document.getElementById('modalBody');
+
     function mostrarModal(instrumento) {
-        modalBody.innerHTML = `<h3>${instrumento.nombre}</h3><p>${instrumento.historia}</p><p><i class="fas fa-music"></i> Escucha su sonido real con el botón "Escuchar sonido".<br>Para RA, presiona "Ver en RA".</p>`;
+        modalBody.innerHTML = `<h3>${instrumento.nombre}</h3><p>${instrumento.historia}</p><p><i class="fas fa-music"></i> Escucha su sonido real con el botón "Escuchar sonido".<br>Para ver el QR, presiona "Ver QR".</p>`;
         modalHistoria.style.display = 'flex';
     }
+
     document.querySelector('.close-modal').addEventListener('click', () => modalHistoria.style.display = 'none');
     window.addEventListener('click', (e) => { if (e.target === modalHistoria) modalHistoria.style.display = 'none'; });
 
@@ -574,6 +722,7 @@
     if (menuToggle) {
         menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
     }
+
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
