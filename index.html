@@ -13,6 +13,7 @@
         }
     </script>
     <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         /* ===== ESTILOS GENERALES (TUS ESTILOS ORIGINALES) ===== */
         * {
@@ -143,7 +144,7 @@
             align-items: center;
         }
         #ar-camara .container { width: 100%; }
-        #ar-camara h2 { color: #F5F0E6; font-family: Georgia, serif; }
+        #ar-camara h2 { color: #F5F0E6; font-family: Georgia, 'Times New Roman', Times, serif; }
         #ar-camara .section-sub { color: #a8c4a8; }
 
         .ar-badge {
@@ -152,7 +153,7 @@
             color: white; padding: 5px 16px; border-radius: 30px;
             font-size: 0.75rem; font-weight: bold; letter-spacing: 1px;
             text-transform: uppercase; margin-bottom: 1rem;
-            font-family: Georgia, serif;
+            font-family: Georgia, 'Times New Roman', Times, serif;
         }
 
         .ar-main-wrapper {
@@ -162,6 +163,7 @@
             flex-wrap: wrap;
         }
 
+        /* Panel izquierdo (instrucciones, selector) */
         .ar-instructions-panel { flex: 1; min-width: 260px; }
         .ar-instructions-panel h3 { color: #C49A6C; font-size: 1.2rem; margin-bottom: 1rem; }
         .ar-step { display: flex; gap: 0.8rem; align-items: flex-start; margin-bottom: 1.2rem; }
@@ -226,6 +228,7 @@
         .btn-ver-ra { border-color: #C49A6C; color: #C49A6C; }
         .btn-ver-ra:hover { background: rgba(196,154,108,0.1); }
 
+        /* Visor de cámara */
         .ar-camera-panel { flex: 2; min-width: 300px; }
         .ar-screen {
             position: relative; width: 100%;
@@ -430,7 +433,7 @@
     </section>
 
     <!-- ══════════════════════════════════════════════════════════
-         NUEVA SECCIÓN: EXPERIENCIA AR CON CÁMARA (de Claude con estilos corregidos)
+         NUEVA SECCIÓN: EXPERIENCIA AR CON CÁMARA (adaptada de Claude)
     ══════════════════════════════════════════════════════════ -->
     <section id="ar-camara">
         <div class="container">
@@ -670,7 +673,7 @@
 
 <script>
     // ═══════════════════════════════════════════════════════════════
-    // DATOS DE INSTRUMENTOS (TUS RUTAS ORIGINALES)
+    // DATOS DE INSTRUMENTOS (USANDO TUS RUTAS ORIGINALES)
     // ═══════════════════════════════════════════════════════════════
     const instrumentos = [
         { nombre: "Platillos", modelo: "modelos/PLATILLOS.glb", sonido: "sonidos/platillos.mp3", descripcion: "Percusión metálica que marca los acentos rítmicos.", img: "imagenes/platillos.jpg", historia: "Los platillos llegaron al porro desde las bandas militares europeas, pero los músicos costeños los adaptaron con un toque sincopado. Su sonido brillante y cortante resalta los momentos más intensos de la melodía.", icono: "🥁" },
@@ -691,7 +694,7 @@
     let camaraActiva     = false;
 
     // ═══════════════════════════════════════════════════════════════
-    // REFERENCIAS DOM
+    // REFERENCIAS DOM PARA CÁMARA Y AR
     // ═══════════════════════════════════════════════════════════════
     const btnActivar     = document.getElementById('btnActivarCamara');
     const btnDetener     = document.getElementById('btnDetenerCamara');
@@ -713,11 +716,10 @@
     const flash          = document.getElementById('detectionFlash');
 
     // ═══════════════════════════════════════════════════════════════
-    // GENERAR SELECTOR AR
+    // SELECTOR DE INSTRUMENTO PARA LA SECCIÓN AR
     // ═══════════════════════════════════════════════════════════════
     function generarSelectorAR() {
         const cont = document.getElementById('arSelector');
-        if (!cont) return;
         instrumentos.forEach((inst, i) => {
             const btn = document.createElement('button');
             btn.className = 'ar-sel-btn';
@@ -729,21 +731,35 @@
 
     function seleccionarInstrumentoAR(idx) {
         instrumentoActivo = instrumentos[idx];
-        document.querySelectorAll('.ar-sel-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+
+        // Resaltar botón activo
+        document.querySelectorAll('.ar-sel-btn').forEach((b, i) =>
+            b.classList.toggle('active', i === idx)
+        );
+
+        // Actualizar tarjeta de información
         arInfoImg.src = instrumentoActivo.img;
         arInfoImg.onerror = () => { arInfoImg.src = 'https://placehold.co/64x64?text=?'; };
         arInfoNombre.textContent = instrumentoActivo.nombre;
         arInfoDesc.textContent   = instrumentoActivo.descripcion;
         arInfoCard.style.display = 'flex';
+
+        // Actualizar HUD
         hudNombre.classList.add('visible');
-        hudNombre.innerHTML = `${instrumentoActivo.nombre} <span class="hud-instrumento-desc">${instrumentoActivo.descripcion}</span>`;
+        // Limpiar y reemplazar texto del HUD (manteniendo el span de descripción)
+        hudNombre.innerHTML = `${instrumentoActivo.nombre} <span class="hud-instrumento-desc" id="hudDesc">${instrumentoActivo.descripcion}</span>`;
+        // Volver a referenciar el nuevo span (opcional, no crítico)
+
+        // Si la cámara está activa, cargar el modelo 3D en el overlay
         if (camaraActiva) cargarModelo3D(instrumentoActivo.modelo, instrumentoActivo.nombre);
-        btnVerRA.style.display = 'flex';
+
+        // Mostrar botones de acción
+        btnVerRA.style.display  = 'flex';
         btnSonido.style.display = 'flex';
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // CÁMARA
+    // FUNCIONES DE CÁMARA
     // ═══════════════════════════════════════════════════════════════
     async function activarCamara() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -753,19 +769,25 @@
         try {
             btnActivar.disabled = true;
             btnActivar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Activando…';
+
             streamActual = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
                 audio: false
             });
+
             video.srcObject = streamActual;
-            video.style.display = 'block';
+            video.style.display  = 'block';
             placeholder.style.display = 'none';
             scanOverlay.style.display = 'block';
-            arHud.style.display = 'block';
+            arHud.style.display  = 'block';
             camaraActiva = true;
-            btnActivar.style.display = 'none';
-            btnDetener.style.display = 'inline-block';
+
+            btnActivar.style.display  = 'none';
+            btnDetener.style.display  = 'inline-block';
+
+            // Si ya había un instrumento seleccionado, cargamos su modelo
             if (instrumentoActivo) cargarModelo3D(instrumentoActivo.modelo, instrumentoActivo.nombre);
+
         } catch (err) {
             btnActivar.disabled = false;
             btnActivar.innerHTML = '<i class="fas fa-camera"></i> Activar Cámara';
@@ -778,38 +800,57 @@
     }
 
     function detenerCamara() {
-        if (streamActual) { streamActual.getTracks().forEach(t => t.stop()); streamActual = null; }
+        if (streamActual) {
+            streamActual.getTracks().forEach(t => t.stop());
+            streamActual = null;
+        }
         video.srcObject = null;
-        video.style.display = 'none';
-        placeholder.style.display = 'flex';
-        scanOverlay.style.display = 'none';
-        arHud.style.display = 'none';
+        video.style.display      = 'none';
+        placeholder.style.display= 'flex';
+        scanOverlay.style.display= 'none';
+        arHud.style.display      = 'none';
         arModelOverlay.style.display = 'none';
-        arScreenHint.style.display = 'none';
+        arScreenHint.style.display   = 'none';
         camaraActiva = false;
-        btnActivar.disabled = false;
+
+        btnActivar.disabled  = false;
         btnActivar.innerHTML = '<i class="fas fa-camera"></i> Activar Cámara';
         btnActivar.style.display = 'flex';
         btnDetener.style.display = 'none';
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // MODELO 3D EN EL VISOR
+    // ═══════════════════════════════════════════════════════════════
     function cargarModelo3D(modeloURL, nombre) {
+        // Efecto flash visual
         flash.classList.add('flash');
         setTimeout(() => flash.classList.remove('flash'), 300);
+
         arModelViewer.setAttribute('src', modeloURL);
         arModelViewer.setAttribute('alt', nombre);
         arModelViewer.setAttribute('ios-src', modeloURL);
+
         arModelOverlay.style.display = 'block';
         arModelOverlay.style.pointerEvents = 'auto';
         arScreenHint.style.display = 'block';
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // BOTÓN "VER EN RA" (abre modal de AR con model-viewer)
+    // ═══════════════════════════════════════════════════════════════
     function abrirModalRA(modeloURL, nombreInstrumento) {
         const overlay = document.createElement('div');
-        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);z-index:3000;display:flex;justify-content:center;align-items:center;flex-direction:column;padding:1rem;';
+        overlay.style.cssText = [
+            'position:fixed;top:0;left:0;width:100%;height:100%;',
+            'background:rgba(0,0,0,0.92);z-index:3000;',
+            'display:flex;justify-content:center;align-items:center;flex-direction:column;padding:1rem;'
+        ].join('');
+
         const instr = document.createElement('p');
         instr.style.cssText = 'color:white;margin-bottom:12px;font-family:Georgia;text-align:center;font-size:0.9rem;max-width:400px;';
         instr.innerHTML = `<strong style="color:#C49A6C;">${nombreInstrumento}</strong><br>Rota el modelo con el dedo. Toca el ícono <i class="fas fa-cube" style="color:#C49A6C;"></i> para proyectarlo en tu entorno real.`;
+
         const mv = document.createElement('model-viewer');
         mv.setAttribute('src', modeloURL);
         mv.setAttribute('alt', nombreInstrumento);
@@ -820,41 +861,52 @@
         mv.setAttribute('environment-image', 'neutral');
         mv.setAttribute('ios-src', modeloURL);
         mv.style.cssText = 'width:min(90vw,480px);height:min(60vh,480px);background:#111;border-radius:24px;';
+
         const closeBtn = document.createElement('button');
         closeBtn.innerHTML = '✕ Cerrar';
         closeBtn.style.cssText = 'margin-top:16px;padding:12px 28px;background:#C49A6C;border:none;border-radius:40px;color:white;font-weight:bold;cursor:pointer;font-family:Georgia;font-size:1rem;';
         closeBtn.onclick = () => document.body.removeChild(overlay);
+
         overlay.appendChild(instr);
         overlay.appendChild(mv);
         overlay.appendChild(closeBtn);
         document.body.appendChild(overlay);
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // AUDIO
+    // ═══════════════════════════════════════════════════════════════
     function reproducirSonido(url) {
         if (!url) return;
-        if (audioActual) { audioActual.pause(); audioActual.currentTime = 0; }
+        if (audioActual) {
+            audioActual.pause();
+            audioActual.currentTime = 0;
+        }
         const a = new Audio(url);
-        a.play().catch(e => console.warn('Error de audio:', e));
+        a.play().catch(e => console.warn('Error al reproducir sonido:', e));
         audioActual = a;
         a.onended = () => { if (audioActual === a) audioActual = null; };
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // EVENTOS BOTONES AR
+    // EVENTOS DE LOS BOTONES DE LA SECCIÓN AR
     // ═══════════════════════════════════════════════════════════════
-    if (btnActivar) btnActivar.addEventListener('click', activarCamara);
-    if (btnDetener) btnDetener.addEventListener('click', detenerCamara);
-    if (btnVerRA) btnVerRA.addEventListener('click', () => {
-        if (!instrumentoActivo) { alert('Selecciona un instrumento primero.'); return; }
+    btnActivar.addEventListener('click', activarCamara);
+    btnDetener.addEventListener('click', detenerCamara);
+    btnVerRA.addEventListener('click', () => {
+        if (!instrumentoActivo) {
+            alert('Selecciona un instrumento primero.');
+            return;
+        }
         abrirModalRA(instrumentoActivo.modelo, instrumentoActivo.nombre);
     });
-    if (btnSonido) btnSonido.addEventListener('click', () => {
+    btnSonido.addEventListener('click', () => {
         if (instrumentoActivo) reproducirSonido(instrumentoActivo.sonido);
         else alert('Selecciona un instrumento primero.');
     });
 
     // ═══════════════════════════════════════════════════════════════
-    // GENERAR INSTRUMENTOS (sección tradicional)
+    // GENERAR TARJETAS DE INSTRUMENTOS (sección tradicional)
     // ═══════════════════════════════════════════════════════════════
     function generarInstrumentos() {
         const contenedor = document.getElementById('instrumentosGrid');
@@ -876,6 +928,8 @@
             `;
             contenedor.appendChild(card);
         });
+
+        // Eventos de historia
         document.querySelectorAll('[data-historia]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const nombre = btn.getAttribute('data-historia');
@@ -883,9 +937,11 @@
                 if (inst) mostrarModal(inst);
             });
         });
+        // Eventos de sonido tradicionales
         document.querySelectorAll('.btn-sonido-tradicional').forEach(btn => {
             btn.addEventListener('click', () => reproducirSonido(btn.getAttribute('data-sonido')));
         });
+        // Eventos de RA tradicionales (abren el modal igual que el botón de la sección AR)
         document.querySelectorAll('.ar-activate-tradicional').forEach(btn => {
             btn.addEventListener('click', () => {
                 const modelo = btn.getAttribute('data-modelo');
@@ -904,8 +960,19 @@
         modalBody.innerHTML = `<h3>${inst.nombre}</h3><p>${inst.historia}</p><p><i class="fas fa-music"></i> Escucha su sonido real con el botón "Escuchar sonido".<br>Para RA, presiona "Ver en RA".</p>`;
         modalHistoria.style.display = 'flex';
     }
-    document.querySelector('.close-modal')?.addEventListener('click', () => modalHistoria.style.display = 'none');
+    document.querySelector('.close-modal').addEventListener('click', () => modalHistoria.style.display = 'none');
     window.addEventListener('click', (e) => { if (e.target === modalHistoria) modalHistoria.style.display = 'none'; });
+
+    // ═══════════════════════════════════════════════════════════════
+    // QR (ya no se usa, pero se mantiene por si acaso)
+    // ═══════════════════════════════════════════════════════════════
+    function generarQR() {
+        const qrDiv = document.getElementById('qr-code');
+        if (qrDiv && typeof QRCode !== 'undefined') {
+            qrDiv.innerHTML = "";
+            new QRCode(qrDiv, { text: window.location.href, width: 128, height: 128, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+        }
+    }
 
     // ═══════════════════════════════════════════════════════════════
     // MENÚ HAMBURGUESA Y SMOOTH SCROLL
@@ -932,6 +999,8 @@
     // INICIALIZAR
     // ═══════════════════════════════════════════════════════════════
     document.addEventListener('DOMContentLoaded', () => {
+        // Si existe el div del QR (ya no está en el HTML, pero por si acaso)
+        if (document.getElementById('qr-code')) generarQR();
         generarInstrumentos();
         generarSelectorAR();
     });
