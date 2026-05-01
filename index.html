@@ -3,107 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Monumento al Porro | RA con reconocimiento de imágenes</title>
+    <title>Monumento al Porro | Realidad Aumentada</title>
     <style>
-        body { margin: 0; overflow: hidden; font-family: Georgia, serif; }
-        .info {
-            position: fixed; bottom: 20px; left: 0; right: 0;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-            color: white; text-align: center; padding: 10px;
-            font-size: 0.9rem; z-index: 100; border-radius: 30px;
-            width: fit-content; margin: 0 auto; pointer-events: none;
-            border: 1px solid #C49A6C;
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Georgia, 'Times New Roman', Times, serif;
         }
-        .status {
-            position: fixed; top: 20px; right: 16px;
-            background: rgba(0,0,0,0.6); padding: 6px 12px;
-            border-radius: 20px; color: #C49A6C; font-size: 0.7rem;
-            font-family: monospace; z-index: 100;
+        /* Ocultar mensajes de error molestos de A-Frame (opcional) */
+        .a-error, .a-dialog, .a-enter-vr {
+            display: none !important;
+        }
+        /* Interfaz de instrucciones superpuesta */
+        .instruction-overlay {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            padding: 12px 20px;
+            border-radius: 30px;
+            width: fit-content;
+            margin: 0 auto;
+            z-index: 100;
+            pointer-events: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.2);
+            font-family: Georgia, serif;
+        }
+        .title-bar {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            padding: 8px;
+            z-index: 100;
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-family: Georgia, serif;
+            pointer-events: none;
+        }
+        .detection-status {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: #C49A6C;
+            font-size: 0.7rem;
+            font-family: monospace;
+            z-index: 100;
+            pointer-events: none;
+            border-left: 2px solid #C49A6C;
         }
         @media (max-width: 600px) {
-            .info { font-size: 0.7rem; bottom: 10px; }
+            .instruction-overlay { font-size: 0.7rem; bottom: 10px; padding: 8px 16px; }
+            .title-bar { font-size: 0.8rem; top: 10px; }
         }
     </style>
-    <!-- MindAR + A-Frame -->
+    <!-- Importar MindAR + A-Frame -->
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.3/dist/mindar-image-aframe.prod.js"></script>
+    <!-- A-Frame extras para ayudas -->
+    <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 </head>
 <body>
-    <div class="info">🎺 Apunta la cámara a una de las 7 estatuas de bronce. El modelo 3D aparecerá automáticamente.</div>
-    <div class="status" id="status">🔍 Esperando detección...</div>
 
-    <a-scene mindar-image="imageTargetSrc: ./targets/; autoStart: true; uiLoading: no; uiScanning: no;" vr-mode-ui="enabled: false" background="color: #000000">
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <!-- Overlays simples para la experiencia -->
+    <div class="title-bar">
+        🎺 MONUMENTO AL PORRO | REALIDAD AUMENTADA
+    </div>
+    <div class="instruction-overlay">
+        📍 Apunta tu cámara hacia una de las 7 estatuas de bronce. El modelo 3D aparecerá automáticamente.
+    </div>
+    <div class="detection-status" id="statusMsg">
+        🔍 Esperando reconocimiento...
+    </div>
 
-        <!-- PLATILLOS -->
-        <a-entity mindar-image-target="imageTargetSrc: ./targets/platillos.mind;">
-            <a-entity gltf-model="./modelos/PLATILLOS.glb" scale="0.5 0.5 0.5" position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear"></a-entity>
-            <a-entity sound="src: ./sonidos/platillos.mp3; autoplay: true; volume: 0.8;"></a-entity>
+    <!-- Escena A-Frame con MindAR -->
+    <a-scene 
+        mindar-image="imageTargetSrc: ./targets/; autoStart: true; uiLoading: no; uiScanning: no;" 
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false"
+        renderer="antialias: true"
+        background="color: #000000"
+        style="width: 100%; height: 100vh; position: absolute; top: 0; left: 0;">
+        
+        <!-- Cámara obligatoria -->
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="rayOrigin: mouse"></a-camera>
+
+        <!-- ===================================================== -->
+        <!-- TARGET 1: PLATILLOS                                    -->
+        <!-- ===================================================== -->
+        <a-entity mindar-image-target="imageTargetSrc: ./targets/platillos.mind; track: 100;">
+            <!-- Modelo 3D -->
+            <a-entity 
+                gltf-model="./modelos/PLATILLOS.glb"
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                rotation="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear"
+                class="ar-model">
+            </a-entity>
+            <!-- Pequeño efecto de sonido al detectar (controlado por evento) -->
+            <a-entity id="sound-platillos" sound="src: ./sonidos/platillos.mp3; autoplay: false; volume: 0.8;"></a-entity>
         </a-entity>
 
-        <!-- REDOBLANTE -->
+        <!-- ===================================================== -->
+        <!-- TARGET 2: REDOBLANTE                                   -->
+        <!-- ===================================================== -->
         <a-entity mindar-image-target="imageTargetSrc: ./targets/redoblante.mind;">
-            <a-entity gltf-model="./modelos/REDOBLANTE.glb" scale="0.5 0.5 0.5" position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 18000; easing: linear"></a-entity>
-            <a-entity sound="src: ./sonidos/redoblante.mp3; autoplay: true; volume: 0.8;"></a-entity>
+            <a-entity 
+                gltf-model="./modelos/REDOBLANTE.glb"
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 18000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/redoblante.mp3; autoplay: false; volume: 0.8;"></a-entity>
         </a-entity>
 
-        <!-- TROMPETA -->
+        <!-- ===================================================== -->
+        <!-- TARGET 3: TROMPETA                                     -->
+        <!-- ===================================================== -->
         <a-entity mindar-image-target="imageTargetSrc: ./targets/trompeta.mind;">
-            <a-entity gltf-model="./modelos/TROMPETA.glb" scale="0.5 0.5 0.5" position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear"></a-entity>
-            <a-entity sound="src: ./sonidos/trompeta.mp3; autoplay: true; volume: 0.8;"></a-entity>
+            <a-entity 
+                gltf-model="./modelos/TROMPETA.glb"
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/trompeta.mp3; autoplay: false; volume: 0.8;"></a-entity>
         </a-entity>
 
-        <!-- BOMBO -->
+        <!-- ===================================================== -->
+        <!-- TARGET 4: BOMBO                                        -->
+        <!-- ===================================================== -->
         <a-entity mindar-image-target="imageTargetSrc: ./targets/bombo.mind;">
-            <a-entity gltf-model="./modelos/BOMBO.glb" scale="0.5 0.5 0.5" position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 22000; easing: linear"></a-entity>
-            <a-entity sound="src: ./sonidos/bombo.mp3; autoplay: true; volume: 0.8;"></a-entity>
+            <a-entity 
+                gltf-model="./modelos/BOMBO.glb"
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 22000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/bombo.mp3; autoplay: false; volume: 0.8;"></a-entity>
         </a-entity>
 
-        <!-- CLARINETE -->
+        <!-- ===================================================== -->
+        <!-- TARGET 5: CLARINETE                                    -->
+        <!-- ===================================================== -->
         <a-entity mindar-image-target="imageTargetSrc: ./targets/clarinete.mind;">
-            <a-entity gltf-model="./modelos/CLARINETE.glb" scale="0.5 0.5 0.5" position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 16000; easing: linear"></a-entity>
-            <a-entity sound="src: ./sonidos/clarinete.mp3; autoplay: true; volume: 0.8;"></a-entity>
+            <a-entity 
+                gltf-model="./modelos/CLARINETE.glb"
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 16000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/clarinete.mp3; autoplay: false; volume: 0.8;"></a-entity>
         </a-entity>
 
-        <!-- TROMBÓN -->
+        <!-- ===================================================== -->
+        <!-- TARGET 6: TROMBON                                      -->
+        <!-- ===================================================== -->
         <a-entity mindar-image-target="imageTargetSrc: ./targets/trombon.mind;">
-            <a-entity gltf-model="./modelos/TROMBON.glb" scale="0.5 0.5 0.5" position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 19000; easing: linear"></a-entity>
-            <a-entity sound="src: ./sonidos/trombon.mp3; autoplay: true; volume: 0.8;"></a-entity>
+            <a-entity 
+                gltf-model="./modelos/TROMBON.glb"
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 19000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/trombon.mp3; autoplay: false; volume: 0.8;"></a-entity>
         </a-entity>
 
-        <!-- MARÍA VARILLA -->
+        <!-- ===================================================== -->
+        <!-- TARGET 7: MARIA VARILLA                                -->
+        <!-- ===================================================== -->
         <a-entity mindar-image-target="imageTargetSrc: ./targets/maria_varilla.mind;">
-            <a-entity gltf-model="./modelos/MARIA_VARILLA.glb" scale="0.5 0.5 0.5" position="0 0 0"
-                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear"></a-entity>
-            <a-entity sound="src: ./sonidos/maria_varilla.mp3; autoplay: true; volume: 0.8;"></a-entity>
+            <a-entity 
+                gltf-model="./modelos/MARIA_VARILLA.glb"
+                scale="0.5 0.5 0.5"
+                position="0 0 0"
+                animation="property: rotation; to: 0 360 0; loop: true; dur: 20000; easing: linear">
+            </a-entity>
+            <a-entity sound="src: ./sonidos/maria_varilla.mp3; autoplay: false; volume: 0.8;"></a-entity>
         </a-entity>
+
     </a-scene>
 
     <script>
-        // Actualizar estado de detección en la interfaz
-        setInterval(() => {
-            const active = document.querySelectorAll('a-entity[mindar-image-target][visible="true"]');
-            const statusDiv = document.getElementById('status');
-            if (active.length) {
-                const src = active[0].getAttribute('mindar-image-target')?.imageTargetSrc || '';
-                let name = 'Desconocido';
-                if (src.includes('platillos')) name = 'Platillos';
-                else if (src.includes('redoblante')) name = 'Redoblante';
-                else if (src.includes('trompeta')) name = 'Trompeta';
-                else if (src.includes('bombo')) name = 'Bombo';
-                else if (src.includes('clarinete')) name = 'Clarinete';
-                else if (src.includes('trombon')) name = 'Trombón';
-                else if (src.includes('maria_varilla')) name = 'María Varilla';
-                statusDiv.innerHTML = `🎯 Detectado: ${name}`;
-            } else {
-                statusDiv.innerHTML = `🔍 Apunta a una estatua...`;
-            }
-        }, 500);
+        // Pequeño script para actualizar el estado de detección y reproducir sonidos
+        // y manejar la UI de estado.
+        (function() {
+            const statusDiv = document.getElementById('statusMsg');
+            let currentTarget = null;
+
+            // Función para actualizar mensaje (usando eventos de MindAR)
+            // Como MindAR no dispara eventos nativos fáciles de atrapar desde aquí sin el componente,
+            // usamos un setInterval para verificar los targets activos (esto es rápido y no afecta rendimiento).
+            setInterval(() => {
+                const activeTargets = document.querySelectorAll('a-entity[mindar-image-target][visible="true"]');
+                if (activeTargets.length > 0) {
+                    const targetEntity = activeTargets[0];
+                    // Obtener el nombre del target (desde el src)
+                    const src = targetEntity.getAttribute('mindar-image-target')?.imageTargetSrc;
+                    let name = "desconocido";
+                    if (src) {
+                        if (src.includes('platillos')) name = "Platillos";
+                        else if (src.includes('redoblante')) name = "Redoblante";
+                        else if (src.includes('trompeta')) name = "Trompeta";
+                        else if (src.includes('bombo')) name = "Bombo";
+                        else if (src.includes('clarinete')) name = "Clarinete";
+                        else if (src.includes('trombon')) name = "Trombón";
+                        else if (src.includes('maria_varilla')) name = "María Varilla";
+                    }
+                    statusDiv.innerHTML = `🎯 DETECTADO: ${name} <span style="color:#a8e6cf;">●</span>`;
+                    statusDiv.style.color = "#C49A6C";
+                    
+                    // Reproducir sonido asociado si no se ha reproducido para este target
+                    if (currentTarget !== name) {
+                        currentTarget = name;
+                        // Buscar el elemento de sonido dentro del target activo y reproducirlo
+                        const soundComp = targetEntity.querySelector('a-entity[sound]');
+                        if (soundComp && soundComp.components && soundComp.components.sound) {
+                            soundComp.components.sound.playSound();
+                        }
+                    }
+                } else {
+                    if (currentTarget !== null) {
+                        statusDiv.innerHTML = `🔍 Escaneando... acerca la cámara a una estatua.`;
+                        statusDiv.style.color = "#C49A6C";
+                        currentTarget = null;
+                    }
+                }
+            }, 300);
+        })();
     </script>
 </body>
 </html>
