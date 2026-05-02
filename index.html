@@ -6,7 +6,7 @@
     <title>Monumento al Porro | Realidad Aumentada y Patrimonio Cultural</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== ESTILOS GENERALES (IDÉNTICOS A TU ORIGINAL) ===== */
+        /* ===== ESTILOS GENERALES ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: Georgia, 'Times New Roman', Times, serif;
@@ -62,7 +62,7 @@
         .btn-light:hover { background: white; color: #2C3E2F; }
         .bg-alt { background-color: #F5F0E6; }
 
-        /* ===== SECCIÓN RA (GUÍA ACTUALIZADA) ===== */
+        /* ===== SECCIÓN RA ===== */
         .ra-grid { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
         .ra-text { flex: 1.5; }
         .ra-steps { margin-top: 1rem; }
@@ -104,7 +104,7 @@
         .card-content { padding: 1.5rem; }
         .card-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 1rem; }
 
-        /* Historia, ubicación, testimonios, footer (sin cambios) */
+        /* Historia, ubicación, testimonios, footer */
         .historia-grid { display: flex; gap: 2rem; flex-wrap: wrap; align-items: stretch; }
         .historia-texto { flex: 2; }
         .historia-texto blockquote {
@@ -216,7 +216,7 @@
         </div>
     </section>
 
-    <!-- SECCIÓN RA (GUÍA) -->
+    <!-- SECCIÓN RA -->
     <section id="ra" class="full-screen">
         <div class="container">
             <h2>Realidad Aumentada en el monumento</h2>
@@ -225,7 +225,7 @@
                     <span class="badge-ra">✨ RA activa con MyWebAR</span>
                     <div class="ra-steps">
                         <div class="step"><div class="step-number">1</div><div class="step-text"><strong>Elige un instrumento</strong><br>Desplázate hacia abajo y selecciona el que quieras ver.</div></div>
-                        <div class="step"><div class="step-number">2</div><div class="step-text"><strong>Accede a la experiencia AR</strong><br>Toca el botón <strong>"🔍 Escanea el código"</strong>. Se abrirá un panel con un código QR exclusivo y un enlace directo.</div></div>
+                        <div class="step"><div class="step-number">2</div><div class="step-text"><strong>Accede a la experiencia AR</strong><br>Toca el botón <strong>"Escanea el código"</strong>. Se abrirá un panel con un código QR exclusivo y un enlace directo.</div></div>
                         <div class="step"><div class="step-number">3</div><div class="step-text"><strong>Apunta tu cámara</strong><br>Una vez dentro, solo apunta a una superficie plana (piso, mesa) y el modelo 3D del instrumento aparecerá con movimiento y sonido incluidos.</div></div>
                     </div>
                     <p><i class="fas fa-mobile-alt"></i> Compatible con iOS y Android. No necesitas instalar ninguna app adicional.</p>
@@ -233,7 +233,7 @@
                 <div class="ra-mockup">
                     <div class="mockup-screen">
                         <img id="qr-general" src="codigos_qr/CODIGO_DE_LA_PAGUINA.png" alt="Código QR de la página">
-                        <p><i class="fas fa-camera"></i> Escanea este QR para acceder a la página completa desde tu móvil</p>
+                        <p><i class="fas fa-camera"></i> Escanea este QR para acceder a la página completa desde tu móvil y compartirla con tus contactos</p>
                         <small>También puedes compartir esta página directamente con el enlace.</small>
                     </div>
                 </div>
@@ -250,7 +250,7 @@
         </div>
     </section>
 
-    <!-- HISTORIA (igual) -->
+    <!-- HISTORIA -->
     <section id="historia" class="full-screen">
         <div class="container">
             <h2>Historia del porro sinuano</h2>
@@ -272,7 +272,7 @@
         </div>
     </section>
 
-    <!-- UBICACIÓN (igual) -->
+    <!-- UBICACIÓN -->
     <section id="ubicacion" class="full-screen bg-alt">
         <div class="container">
             <h2>Ubicación</h2>
@@ -296,7 +296,7 @@
         </div>
     </section>
 
-    <!-- TESTIMONIOS (igual) -->
+    <!-- TESTIMONIOS -->
     <section id="testimonios" class="full-screen">
         <div class="container">
             <h2>Visitantes y expertos opinan</h2>
@@ -346,7 +346,7 @@
     </div>
 </footer>
 
-<!-- MODAL PARA HISTORIA -->
+<!-- MODALES -->
 <div id="modalHistoria" class="modal">
     <div class="modal-content">
         <span class="close-modal">&times;</span>
@@ -354,7 +354,6 @@
     </div>
 </div>
 
-<!-- MODAL PARA SONIDO (con cita) -->
 <div id="modalSonido" class="modal-sonido">
     <div class="modal-sonido-content">
         <span class="close-sonido">&times;</span>
@@ -362,7 +361,6 @@
     </div>
 </div>
 
-<!-- MODAL PARA AR (QR + enlace) -->
 <div id="modalAR" class="modal-ar">
     <div class="modal-ar-content">
         <span class="close-ar">&times;</span>
@@ -371,7 +369,7 @@
 </div>
 
 <script>
-    // ========== DATOS DE INSTRUMENTOS (con QR y enlaces MyWebAR y citas de sonido) ==========
+    // ========== DATOS DE INSTRUMENTOS ==========
     const instrumentos = [
         { 
             nombre: "Platillos",
@@ -445,7 +443,7 @@
         }
     ];
 
-    // ========== REFERENCIAS A MODALES ==========
+    // ========== REFERENCIAS MODALES ==========
     const modalHistoria = document.getElementById('modalHistoria');
     const modalBody = document.getElementById('modalBody');
     const modalSonido = document.getElementById('modalSonido');
@@ -503,7 +501,7 @@
                     <div class="card-buttons">
                         <button class="btn-sm btn" data-historia="${inst.nombre}">Ver historia</button>
                         <button class="btn-sm btn-outline" data-sonido="${inst.nombre}">Escuchar sonido</button>
-                        <button class="btn-sm btn" data-ar="${inst.nombre}">🔍 Escanea el código</button>
+                        <button class="btn-sm btn" data-ar="${inst.nombre}">Escanea el código</button>
                     </div>
                 </div>
             `;
